@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" />
+        <ProjectReference Include="..\Common.Infrastructure.Persistence\Common.Infrastructure.Persistence.csproj" />
+    </ItemGroup>
+</Project>

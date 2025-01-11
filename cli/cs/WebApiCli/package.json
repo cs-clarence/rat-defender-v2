@@ -1,0 +1,10 @@
+{
+    "name": "@repo/web-api-cli",
+    "version": "0.0.0-semantically-released",
+    "scripts": {
+        "seed": "with-env 'dotnet run --project ./WebApiCli.csproj -- db seed'",
+        "build": "with-env 'dotnet build  --configuration Release'",
+        "create:admin": "with-env 'dotnet run --project ./WebApiCli.csproj -- create admin'",
+        "publish:aot-linux-x64": "with-env 'dotnet publish -c Release -r linux-x64 --self-contained true'"
+    }
+}

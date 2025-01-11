@@ -1,0 +1,22 @@
+{
+    "name": "@repo/web-api-client",
+    "devDependencies": {
+        "@orval/core": "^7.4.1",
+        "ajv": "^8.17.1",
+        "orval": "^7.4.1"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./custom-fetch": "./src/mutator/custom-fetch.ts",
+        "./endpoints/*": "./src/gen/endpoints/*.ts",
+        "./schemas": "./src/gen/schemas/index.ts",
+        "./schemas/*": "./src/gen/schemas/*.ts"
+    },
+    "scripts": {
+        "codegen": "with-env -- 'bunx orval --config ./orval.config.ts'"
+    },
+    "peerDependencies": {
+        "@faker-js/faker": "^8.4.1",
+        "msw": "^2.3.4"
+    }
+}

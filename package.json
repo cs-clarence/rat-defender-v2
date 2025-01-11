@@ -1,0 +1,29 @@
+{
+    "name": "@repo/root",
+    "version": "0.0.0-semantically-released",
+    "scripts": {},
+    "dependencies": {
+        "@rencedm112/with-env": "^0.0.43",
+        "@repo/biome-config": "workspace:*",
+        "@repo/strip-utf8-bom": "workspace:*",
+        "@repo/tsconfig": "workspace:*",
+        "rimraf": "^6.0.1",
+        "turbo": "^2.3.3"
+    },
+    "workspaces": [
+        "packages/ts/*",
+        "packages/cs/*",
+        "packages/atlas/*",
+        "apps/ts/*",
+        "services/ts/*",
+        "services/cs/*",
+        "scripts/bun/*"
+    ],
+    "packageManager": "bun@1.1.43",
+    "publishConfig": {
+        "access": "restricted"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4"
+    }
+}

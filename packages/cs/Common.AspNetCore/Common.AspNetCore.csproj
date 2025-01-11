@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>Common.AspNetCore</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Humanizer.Core" Version="2.14.1" PrivateAssets="compile"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Common.Application\Common.Application.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\Common.Domain\Common.Domain.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\Common.Infrastructure.Persistence\Common.Infrastructure.Persistence.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\Common.Utilities\Common.Utilities.csproj" PrivateAssets="compile"/>
+    </ItemGroup>
+</Project>

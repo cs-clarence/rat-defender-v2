@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Common.Configuration</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="src\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+<!--    <PublishAot>true</PublishAot>-->
+    <RootNamespace>WebApiCli</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ConsoleAppFramework" Version="5.3.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Sharprompt" Version="2.4.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\packages\cs\Iam.DependencyInjection\Iam.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\..\packages\cs\Iam.Infrastructure.Persistence\Iam.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\..\..\packages\cs\Iam.Shared\Iam.Shared.csproj" />
+    <ProjectReference Include="..\..\..\packages\cs\Common.Application\Common.Application.csproj" />
+    <ProjectReference Include="..\..\..\packages\cs\Common.DependencyInjection\Common.DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="appsettings.Development.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

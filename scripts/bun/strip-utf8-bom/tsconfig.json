@@ -1,0 +1,8 @@
+{
+    "extends": ["@repo/tsconfig/base.json"],
+    "compilerOptions": {
+        "outDir": "dist",
+        "types": ["@types/bun"]
+    },
+    "exclude": ["dist", "node_modules", "bin"]
+}

@@ -1,0 +1,12 @@
+node_modules
+/obj
+/bin
+*/cs/**/bin
+*/cs/**/obj
+.output
+.turbo
+.vercel
+.vinxi
+.env
+.env.*
+.idea

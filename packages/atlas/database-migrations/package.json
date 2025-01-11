@@ -1,0 +1,12 @@
+{
+    "name": "@repo/database-migration",
+    "version": "0.0.0-semantically-released",
+    "scripts": {
+        "schema:apply": "with-env 'atlas schema apply --auto-approve --env local'",
+        "schema:clean": "with-env 'atlas schema clean --auto-approve --env local'"
+    },
+    "devDependencies": {
+        "@repo/server": "workspace:*"
+    }
+}
+

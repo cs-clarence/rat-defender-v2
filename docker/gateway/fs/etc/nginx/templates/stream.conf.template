@@ -1,0 +1,24 @@
+upstream upstream-database {
+    server database:5432;
+}
+
+upstream upstream-webdav {
+    server webdav:9733;
+}
+
+
+# Database
+server {
+    listen *:5432;
+    server_name $DATABASE_HOST;
+
+    proxy_pass upstream-database;
+}
+
+#Webdav
+server {
+    listen *:9733;
+    server_name $WEBDAV_HOST;
+
+    proxy_pass upstream-webdav;
+}

@@ -1,0 +1,43 @@
+include mime.types;
+
+upstream upstream-app {
+    server app:8080;
+}
+
+upstream upstream-adminer {
+    server adminer:8080;
+}
+
+upstream upstream-s3 {
+    server s3:9633;
+}
+
+# App
+server {
+    listen *:80;
+    server_name $APP_HOST;
+
+    location / {
+        proxy_pass http://upstream-app;
+    }
+}
+
+# Adminer
+server {
+    listen *:80;
+    server_name $ADMINER_HOST;
+
+    location / {
+        proxy_pass http://upstream-adminer;
+    }
+}
+
+# S3
+server {
+    listen *:80;
+    server_name $S3_HOST;
+
+    location / {
+        proxy_pass http://upstream-s3;
+    }
+}

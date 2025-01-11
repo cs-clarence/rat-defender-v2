@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="../Common.Testing/Common.Testing.csproj" />
+    </ItemGroup>
+
+</Project>

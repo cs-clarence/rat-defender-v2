@@ -1,0 +1,139 @@
+services:
+    database:
+        image: postgres:alpine
+        restart: unless-stopped
+        env_file: .env
+        volumes:
+            - "./docker/database/fs/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+            - database-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+
+    adminer:
+        restart: unless-stopped
+        image: michalhosna/adminer
+        env_file: .env
+        ports:
+            - 8080:8080
+        environment:
+            ADMINER_DB: tara_turo
+            ADMINER_DRIVER: pgsql
+            ADMINER_SERVER: database
+            ADMINER_AUTOLOGIN: 0
+            ADMINER_NAME: Welcome to Tara Turo DB Admin Panel
+
+    mailhog:
+        restart: unless-stopped
+        env_file: .env
+        image: mailhog/mailhog
+        ports:
+            - "1025:1025"
+            - "8025:8025"
+        expose:
+            - 1025
+            - 8025
+
+    fs-master-1:
+        image: chrislusf/seaweedfs
+        restart: unless-stopped
+        ports:
+            - "9333:9333"
+            - "9334:9334"
+            - "19333:19333"
+        volumes:
+            - fs-master-1-data:/data:rw
+
+        command:
+            - master
+            - -ip=fs-master-1 # This is the hostname of the master
+            - -ip.bind=0.0.0.0 # Which IP to bind
+            - -mdir=/data # Where to store metadata
+            - -port=9333 # Port for this master to listen
+            - -port.grpc=19333 # Default is port + 10000
+            - -metricsPort=9334
+            - -volumeSizeLimitMB=1000 # 1gb volume size limit
+    fs-volume-1:
+        image: chrislusf/seaweedfs
+        restart: unless-stopped
+        ports:
+            - "9433:9433"
+            - "9434:9434"
+            - "19433:19433"
+        volumes:
+            - fs-volume-1-data:/data:rw
+        command:
+            - volume
+            - -mserver=fs-master-1:9333 # Comma separated master servers
+            - -ip=fs-volume-1 # This is the hostname of the volume
+            - -ip.bind=0.0.0.0 # Which IP to bind
+            - -dir=/data # Where to store data
+            - -port=9433 # Port for this master to listen
+            - -port.grpc=19433 # Default is port + 10000
+            - -metricsPort=9434
+        depends_on:
+            - fs-master-1
+
+    fs-filer-1:
+        image: chrislusf/seaweedfs
+        restart: unless-stopped
+        ports:
+            - "9533:9533"
+            - "9534:9534"
+            - "19533:19533"
+        command:
+            - filer
+            - -master=fs-master-1:9333
+            - -ip=fs-filer-1
+            - -ip.bind=0.0.0.0
+            - -port=9533
+            - -port.grpc=19533
+        volumes:
+            - fs-filer-1-data:/data
+        depends_on:
+            - fs-master-1
+            - fs-volume-1
+    s3:
+        image: chrislusf/seaweedfs
+        restart: unless-stopped
+        ports:
+            - "9633:9633"
+            - "9634:9634"
+            - "19633:19633"
+        command:
+            - s3
+            - -filer=fs-filer-1:9533
+            - -ip.bind=0.0.0.0
+            - -port=9633
+            - -port.grpc=19633
+        depends_on:
+            - fs-master-1
+            - fs-volume-1
+            - fs-filer-1
+    webdav:
+        image: chrislusf/seaweedfs
+        restart: unless-stopped
+        ports:
+            - "9733:9733"
+            - "9734:9734"
+        command:
+            - webdav
+            - -filer=fs-filer-1:9533
+            - -port=9733
+        depends_on:
+            - fs-master-1
+            - fs-volume-1
+            - fs-filer-1
+
+volumes:
+    database-data:
+        driver: local
+        name: database-data
+    fs-master-1-data:
+        driver: local
+        name: fs-master-1-data
+    fs-volume-1-data:
+        driver: local
+        name: fs-volume-1-data
+    fs-filer-1-data:
+        driver: local
+        name: fs-filer-1-data
