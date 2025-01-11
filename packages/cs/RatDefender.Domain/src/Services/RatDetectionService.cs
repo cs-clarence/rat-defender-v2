@@ -96,7 +96,7 @@ public class RatDetectionService(IRatDetectionRepository repo)
         CancellationToken cancellationToken = default)
     {
         var start = day.ToDateTime(new TimeOnly(0, 0));
-        var end = day.AddDays(1).ToDateTime(new TimeOnly(0, 0));
+        var end = day.ToDateTime(new TimeOnly(23, 59, 59));
         var startDto = new DateTimeOffset(start, TimeSpan.Zero);
         var endDto = new DateTimeOffset(end, TimeSpan.Zero);
 

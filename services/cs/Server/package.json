@@ -7,7 +7,10 @@
         "strip-utf8-bom": "bunx strip-utf8-bom ../../../packages/atlas/database-migrations/src/schemas/",
         "codegen:db-schema": "bun run codegen:rat-defender-db-schema && bun run strip-utf8-bom",
         "cleanup": "rimraf ../../../packages/atlas/database-migrations/src/schemas/*.sql",
-        "codegen": "bun run cleanup && bun run codegen:db-schema"
+        "codegen": "bun run cleanup && bun run codegen:db-schema",
+        "copy-files-to-output": "with-env -- 'cp ./rat-defender.db.sqlite ./appsettings.json ./bin/out/'",
+        "build": "with-env 'dotnet publish Server.csproj -c Release -o ./bin/out' && bun run copy-files-to-output",
+        "copy-out-to-server": "with-env -- 'sshpass -p \"$SERVER_PASSWORD\" -- scp -r ./bin/out/. $SERVER_USERNAME@$SERVER_HOST:$SERVER_COPY_PATH'"
     },
     "devDependencies": {
         "@repo/strip-utf8-bom": "workspace:*"
