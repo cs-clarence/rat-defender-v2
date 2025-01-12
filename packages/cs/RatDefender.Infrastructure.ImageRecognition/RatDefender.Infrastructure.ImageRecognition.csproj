@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>RatDefender.Infrastructure.ImageRecognition</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+<!--        <PackageReference Include="Emgu.CV" Version="4.10.*"/>-->
+<!--        <PackageReference Include="Emgu.CV.runtime.debian-arm64" Version="4.10.*"/>-->
+<!--        <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.10.*"/>-->
+        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.*" PrivateAssets="compile"/>
+        <PackageReference Include="System.Numerics.Tensors" Version="9.0.0" PrivateAssets="compile"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" PrivateAssets="compile"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" />
+    </ItemGroup>
+
+    <!--    <Target Name="CopyModels" AfterTargets="Build">-->
+    <!--        <Copy SourceFiles="$(MSBuildThisFileDirectory)/assets/models/best.onnx" DestinationFolder="$(Target)/models" />-->
+    <!--    </Target>-->
+
+</Project>

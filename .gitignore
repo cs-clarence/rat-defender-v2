@@ -26,7 +26,8 @@ node_modules
 gitignore
 
 # Local Env files
-.env*
+.env.local
+.env.*.local
 
 # Example Env files
 !.env*example

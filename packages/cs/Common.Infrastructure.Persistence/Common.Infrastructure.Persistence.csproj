@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Common.Infrastructure.Persistence</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>Common.Infrastructure.Persistence</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" PrivateAssets="compile" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.*"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Common.Domain\Common.Domain.csproj" PrivateAssets="compile" />
-    <ProjectReference Include="..\Common.Utilities\Common.Utilities.csproj" PrivateAssets="compile" />
-    <ProjectReference Include="..\Common.Application\Common.Application.csproj" PrivateAssets="compile" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Common.Domain\Common.Domain.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\Common.Utilities\Common.Utilities.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\Common.Application\Common.Application.csproj" PrivateAssets="compile"/>
+    </ItemGroup>
 
 </Project>

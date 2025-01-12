@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WrapperGen.UnitTests", "pac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snowflake", "packages\cs\Snowflake\Snowflake.csproj", "{9DB0CCA7-2D14-4312-A24A-A633C36CA541}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Infrastructure.HardwareControl", "packages\cs\Common.Infrastructure.HardwareControl\Common.Infrastructure.HardwareControl.csproj", "{5E490FE4-6DA8-4FE5-B8FB-E0AD5F856008}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Infrastructure.Iot", "packages\cs\Common.Infrastructure.Iot\Common.Infrastructure.Iot.csproj", "{5E490FE4-6DA8-4FE5-B8FB-E0AD5F856008}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatDefender.Domain", "packages\cs\RatDefender.Domain\RatDefender.Domain.csproj", "{8661CC9A-8CD9-4A40-900D-054EC06D0B93}"
 EndProject
@@ -56,6 +56,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Testing", "packages\cs\Common.Testing\Common.Testing.csproj", "{3560177B-8AE1-4C4B-95B5-FBAC336D61D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Testing.Unit", "packages\cs\Common.Testing.Unit\Common.Testing.Unit.csproj", "{323EBC4B-FC7C-49E1-830A-F5AA96D8059D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatDefender.HostedServices", "packages\cs\RatDefender.HostedServices\RatDefender.HostedServices.csproj", "{3F41EB45-BE3B-4E69-A4B0-347171E4E14C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatDefender.Infrastructure.ImageRecognition", "packages\cs\RatDefender.Infrastructure.ImageRecognition\RatDefender.Infrastructure.ImageRecognition.csproj", "{7689E818-1E18-4781-B86E-77760F33A9B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatDetection.Infrastructure.Iot", "packages\cs\RatDetection.Infrastructure.Iot\RatDetection.Infrastructure.Iot.csproj", "{FB415E5B-B341-47CD-811D-F2E1C52B4042}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +164,18 @@ Global
 		{323EBC4B-FC7C-49E1-830A-F5AA96D8059D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{323EBC4B-FC7C-49E1-830A-F5AA96D8059D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{323EBC4B-FC7C-49E1-830A-F5AA96D8059D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F41EB45-BE3B-4E69-A4B0-347171E4E14C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F41EB45-BE3B-4E69-A4B0-347171E4E14C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F41EB45-BE3B-4E69-A4B0-347171E4E14C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F41EB45-BE3B-4E69-A4B0-347171E4E14C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7689E818-1E18-4781-B86E-77760F33A9B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7689E818-1E18-4781-B86E-77760F33A9B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7689E818-1E18-4781-B86E-77760F33A9B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7689E818-1E18-4781-B86E-77760F33A9B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB415E5B-B341-47CD-811D-F2E1C52B4042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB415E5B-B341-47CD-811D-F2E1C52B4042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB415E5B-B341-47CD-811D-F2E1C52B4042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB415E5B-B341-47CD-811D-F2E1C52B4042}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6D1365B2-47F8-480E-9B3E-842D074C56EC} = {6B66033C-440C-40CE-8EFF-C90EA4BC85F4}
@@ -185,5 +203,8 @@ Global
 		{EE9D7EF2-9071-43F6-9473-6A7A28A4E25E} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
 		{3560177B-8AE1-4C4B-95B5-FBAC336D61D5} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
 		{323EBC4B-FC7C-49E1-830A-F5AA96D8059D} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
+		{3F41EB45-BE3B-4E69-A4B0-347171E4E14C} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
+		{7689E818-1E18-4781-B86E-77760F33A9B3} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
+		{FB415E5B-B341-47CD-811D-F2E1C52B4042} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
 	EndGlobalSection
 EndGlobal

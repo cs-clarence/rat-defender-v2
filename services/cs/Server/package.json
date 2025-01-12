@@ -2,7 +2,7 @@
     "name": "@repo/server",
     "version": "0.0.0-semantically-released",
     "scripts": {
-        "dev": "with-env 'dotnet watch run --project Server.csproj'",
+        "dev": "with-env 'dotnet watch run --project Server.csproj --no-launch-profile --no-hot-reload'",
         "codegen:rat-defender-db-schema": "with-env -- 'dotnet-ef dbcontext script --project ../../../packages/cs/RatDefender.Infrastructure.Persistence --context RatDefenderDbContext --startup-project ./Server.csproj --output ../../../packages/atlas/database-migrations/src/schemas/0001_rat_defender.sql'",
         "strip-utf8-bom": "bunx strip-utf8-bom ../../../packages/atlas/database-migrations/src/schemas/",
         "codegen:db-schema": "bun run codegen:rat-defender-db-schema && bun run strip-utf8-bom",

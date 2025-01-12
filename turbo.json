@@ -1,6 +1,8 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "ui": "tui",
+    "envMode": "strict",
+    "globalEnv": ["LD_LIBRARY_PATH", "PATH", "DATABASE_URL", "MIGRATION_DEV_DATABASE_URL"],
     "tasks": {
         "check": {
             "dependsOn": ["^check"]

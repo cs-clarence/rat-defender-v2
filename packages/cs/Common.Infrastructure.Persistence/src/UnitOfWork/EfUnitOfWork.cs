@@ -41,7 +41,32 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
         await CommitAsync(cancellationToken);
     }
 
-    public async Task<long> SaveChangesAsync(
+    public Task BeginAsync(CancellationToken cancellationToken = default)
+    {
+        Begin(TrackingBehavior.TrackAll);
+        return Task.CompletedTask;
+    }
+
+    public Task BeginAsync(TrackingBehavior trackingBehavior,
+        CancellationToken cancellationToken = default)
+    {
+        Begin(trackingBehavior);
+        return Task.CompletedTask;
+    }
+
+    Task IAsyncUnitOfWork.CommitAsync(CancellationToken cancellationToken)
+    {
+        return CommitAsync(cancellationToken);
+    }
+
+    public  Task RollbackAsync(CancellationToken cancellationToken = default)
+    {
+        _transaction?.Rollback();
+        _transaction = null;
+        return Task.CompletedTask;
+    }
+
+    public async Task<ulong> SaveChangesAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -56,15 +81,22 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
             result += await context.SaveChangesAsync(cancellationToken);
         }
 
-        return result;
+        return (ulong)result;
     }
 
-    public void ExecTracking(Action block)
+    public void Rollback()
     {
-        throw new NotImplementedException();
+        var tx = _transaction;
+        
+        if (tx is not null)
+        {
+            tx.Rollback();
+        }
+        
+        _transaction = null;
     }
 
-    public long SaveChanges()
+    public ulong SaveChanges()
     {
         var result = 0L;
         foreach (var context in _dbContexts ?? Enumerable.Empty<DbContext>())
@@ -75,7 +107,22 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
             }
         }
 
-        return result;
+        return (ulong)result;
+    }
+
+    void ISyncUnitOfWork.Begin(TrackingBehavior trackingBehavior)
+    {
+        Begin(trackingBehavior);
+    }
+
+    public void Begin()
+    {
+        Begin(TrackingBehavior.TrackAll);
+    }
+
+    void ISyncUnitOfWork.Commit()
+    {
+        Commit();
     }
 
     private async Task CommitAsync(
@@ -136,7 +183,7 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
         }
     }
 
-    private void Begin(TrackingBehavior? trackingBehavior = null)
+    private void Begin(TrackingBehavior trackingBehavior)
     {
         ApplyDbContexts();
 
@@ -144,11 +191,9 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
         {
             if (Transaction.Current == null)
             {
-                if (_transaction != null)
+                if (_transaction is not null)
                 {
-                    context.Database.UseTransaction(
-                        _transaction.GetDbTransaction()
-                    );
+                    context.Database.UseTransaction(_transaction.GetDbTransaction());
                 }
                 else
                 {
@@ -157,11 +202,8 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
             }
 
             RememberPreviousQueryTrackingBehavior();
-            if (trackingBehavior is not null)
-            {
-                context.ChangeTracker.QueryTrackingBehavior =
-                    MapTrackingBehavior(trackingBehavior.Value);
-            }
+            context.ChangeTracker.QueryTrackingBehavior =
+                MapTrackingBehavior(trackingBehavior);
         }
     }
 
@@ -187,227 +229,5 @@ public class EfUnitOfWork(ActiveDbContextCollection dbContexts) : IUnitOfWork
         }
 
         GC.SuppressFinalize(this);
-    }
-
-    public async Task<T> ExecAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin();
-        var result = await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> ExecAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin();
-        var result = await block();
-        await CommitAsync(cancellationToken);
-        return result;
-    }
-
-    public async Task<T> ExecNoTrackingAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTracking);
-        var result = await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> ExecNoTrackingAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTracking);
-        var result = await block();
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> ExecNoTrackingWithIdentityResolutionAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTrackingWithIdentityResolution);
-        var result = await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> ExecNoTrackingWithIdentityResolutionAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTrackingWithIdentityResolution);
-        var result = await block();
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> ExecTrackingAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.TrackAll);
-        var result = await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> ExecTrackingAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.TrackAll);
-        var result = await block();
-        await CommitAsync(cancellationToken);
-
-        return result;
-    }
-
-    public async Task ExecAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin();
-        await block();
-        await CommitAsync(cancellationToken);
-    }
-
-    public async Task ExecAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin();
-        await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-    }
-
-    public async Task ExecNoTrackingAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTracking);
-        await block();
-        await CommitAsync(cancellationToken);
-    }
-
-    public async Task ExecNoTrackingAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTracking);
-        await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-    }
-
-    public async Task ExecNoTrackingWithIdentityResolutionAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTrackingWithIdentityResolution);
-        await block();
-        await CommitAsync(cancellationToken);
-    }
-
-    public async Task ExecNoTrackingWithIdentityResolutionAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.NoTrackingWithIdentityResolution);
-        await block(cancellationToken);
-        await CommitAsync(cancellationToken);
-    }
-
-    public async Task ExecTrackingAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Begin(TrackingBehavior.TrackAll);
-        await block();
-        await CommitAsync(cancellationToken);
-    }
-
-    public T Exec<T>(Func<T> block)
-    {
-        Begin();
-        var result = block();
-        Commit();
-
-        return result;
-    }
-
-    public void Exec(Action block)
-    {
-        Begin();
-        block();
-        Commit();
-    }
-
-    public T ExecNoTracking<T>(Func<T> block)
-    {
-        Begin(TrackingBehavior.NoTracking);
-        var result = block();
-        Commit();
-
-        return result;
-    }
-
-    public void ExecNoTracking(Action block)
-    {
-        Begin(TrackingBehavior.NoTracking);
-        block();
-        Commit();
-    }
-
-    public T ExecNoTrackingWithIdentityResolution<T>(Func<T> block)
-    {
-        Begin(TrackingBehavior.NoTrackingWithIdentityResolution);
-        var result = block();
-        Commit();
-
-        return result;
-    }
-
-    public void ExecNoTrackingWithIdentityResolution(Action block)
-    {
-        Begin(TrackingBehavior.NoTrackingWithIdentityResolution);
-        block();
-        Commit();
-    }
-
-    public T ExecTracking<T>(Func<T> block)
-    {
-        Begin(TrackingBehavior.TrackAll);
-        var result = block();
-        Commit();
-
-        return result;
     }
 }

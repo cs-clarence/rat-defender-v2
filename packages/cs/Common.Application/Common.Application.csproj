@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
+    <PackageReference Include="Mediator.Abstractions" Version="2.*" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.0" PrivateAssets="compile" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" PrivateAssets="compile" />
     <PackageReference Include="Riok.Mapperly" Version="4.1.1" />

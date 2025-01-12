@@ -1,21 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" PrivateAssets="All"/>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\packages\cs\Common.AspNetCore\Common.AspNetCore.csproj" PrivateAssets="compile" />
-    <ProjectReference Include="..\..\..\packages\cs\Common.DependencyInjection\Common.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\..\packages\cs\RatDefender.AspNetCore\RatDefender.AspNetCore.csproj" PrivateAssets="compile" />
-    <ProjectReference Include="..\..\..\packages\cs\RatDefender.DependencyInjection\RatDefender.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" PrivateAssets="Compile"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" PrivateAssets="All"/>
+        <PackageReference Include="Mediator.SourceGenerator" Version="2.*">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\packages\cs\Common.AspNetCore\Common.AspNetCore.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\..\..\packages\cs\Common.DependencyInjection\Common.DependencyInjection.csproj"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.AspNetCore\RatDefender.AspNetCore.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.DependencyInjection\RatDefender.DependencyInjection.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj" PrivateAssets="compile"/>
+    </ItemGroup>
 </Project>

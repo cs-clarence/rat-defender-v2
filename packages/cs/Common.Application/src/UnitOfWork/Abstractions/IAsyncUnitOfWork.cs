@@ -1,86 +1,19 @@
+using Common.Domain.Repositories.Abstractions;
+
 namespace Common.Application.UnitOfWork.Abstractions;
 
 public interface IAsyncUnitOfWork : IAsyncDisposable
 {
-    Task<T> ExecAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
+    Task BeginAsync(CancellationToken cancellationToken = default)
+    {
+        return BeginAsync(TrackingBehavior.TrackAll, cancellationToken);
+    }
 
-    Task<T> ExecAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
+    Task BeginAsync(TrackingBehavior trackingBehavior,
+        CancellationToken cancellationToken = default);
 
-    Task<T> ExecNoTrackingAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
+    Task CommitAsync(CancellationToken cancellationToken = default);
+    Task RollbackAsync(CancellationToken cancellationToken = default);
 
-    Task<T> ExecNoTrackingAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<T> ExecNoTrackingWithIdentityResolutionAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<T> ExecNoTrackingWithIdentityResolutionAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<T> ExecTrackingAsync<T>(
-        Func<CancellationToken, Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<T> ExecTrackingAsync<T>(
-        Func<Task<T>> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecNoTrackingAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecNoTrackingAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecNoTrackingWithIdentityResolutionAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecNoTrackingWithIdentityResolutionAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecTrackingAsync(
-        Func<Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task ExecTrackingAsync(
-        Func<CancellationToken, Task> block,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<long> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<ulong> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
