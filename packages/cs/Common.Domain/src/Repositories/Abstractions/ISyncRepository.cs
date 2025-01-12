@@ -147,6 +147,7 @@ public interface ISyncRepository<in TKey, TEntity, out TRepository>
     void Remove(TEntity entity);
 
     void RemoveMany(IEnumerable<TEntity> entities);
+    void RemoveMany(Expression<Func<TEntity, bool>> predicate);
 
     void RemoveById(TKey id);
 

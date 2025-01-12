@@ -1,4 +1,6 @@
-﻿using Mediator;
+﻿using Common.AspNetCore.Dtos.Responses;
+using Common.AspNetCore.Responses;
+using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -19,38 +21,92 @@ public static class RatDefenderApi
         detectionsGroup.MapPost("", RecordDetection)
             .WithName(nameof(RecordDetection));
 
+        detectionsGroup.MapDelete("/{id}", DeleteDetection)
+            .WithName(nameof(DeleteDetection));
+
+        detectionsGroup.MapDelete("", DeleteAllDetections)
+            .WithName(nameof(DeleteAllDetections));
+
+        detectionsGroup.MapPost("/simulations", SimulateDetection)
+            .WithName(nameof(SimulateDetection));
+
         detectionsGroup.MapGet("", GetDetections)
             .WithName(nameof(GetDetections));
 
         detectionsGroup.MapGet("/daily-summaries", GetDailySummaries)
             .WithName(nameof(GetDailySummaries));
 
+        routes.MapGroup("/thermal-image-readings");
+
+        routes.MapGet("/degrees-celsius",
+                GetThermalImagerReadingsDegreesCelsius)
+            .WithName(nameof(GetThermalImagerReadingsDegreesCelsius));
+
         return routes;
     }
 
-    public static async Task<ICollection<RatDetectionDaySummaryDto>>
+    public static async
+        Task<DataResponse<ICollection<RatDetectionDaySummaryDto>>>
         GetDailySummaries(
             this IMediator mediator,
             string? from = null,
             string? to = null
         )
     {
-        return await mediator.Send(new GetDailySummariesQuery(from, to));
+        return Responses.Data(
+            await mediator.Send(new GetDailySummariesQuery(from, to)));
     }
 
-    public static async Task<RatDetectionDto> RecordDetection(
+    public static async Task<DataResponse<RatDetectionDto>> RecordDetection(
         this IMediator mediator
     )
     {
         return await mediator.Send(RecordDetectionCommand.Instance);
     }
 
-    public static async Task<ICollection<RatDetectionDto>> GetDetections(
-        this IMediator mediator,
-        string? from = null,
-        string? to = null
+    public static async Task<DataResponse<ICollection<RatDetectionDto>>>
+        GetDetections(
+            this IMediator mediator,
+            string? from = null,
+            string? to = null
+        )
+    {
+        return Responses.Data(
+            await mediator.Send(new GetDetectionsQuery(from, to)));
+    }
+
+    public static async Task<SuccessResponse> SimulateDetection(
+        this IMediator mediator
     )
     {
-        return await mediator.Send(new GetDetectionsQuery(from, to));
+        await mediator.Send(SimulateDetectionCommand.Instance);
+
+        return Responses.Success();
+    }
+
+    public static async Task<SuccessResponse> DeleteDetection(
+        this IMediator mediator,
+        string id)
+    {
+        await mediator.Send(new DeleteDetectionCommand(id));
+        return Responses.Success();
+    }
+
+    public static async Task<SuccessResponse> DeleteAllDetections(
+        this IMediator mediator
+    )
+    {
+        await mediator.Send(DeleteAllDetectionsCommand.Instance);
+        return Responses.Success();
+    }
+
+    public static async Task<DataResponse<ThermalImageDto>>
+        GetThermalImagerReadingsDegreesCelsius(
+            this IMediator mediator
+        )
+    {
+        return await mediator.Send(
+            GetThermalImagerReadingsDegreeCelsiusQuery
+                .Instance);
     }
 }

@@ -129,4 +129,16 @@ public class RatDetectionRecordsRecordsService(IRatDetectionRepository repo)
     {
         return repo.GetByIdAsync(id, cancellationToken);
     }
+
+    public Task DeleteDetectionAsync(RatDetectionId id,
+        CancellationToken cancellationToken = default)
+    {
+        return repo.RemoveByIdAsync(id, cancellationToken);
+    }
+
+    public Task DeleteAllDetectionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return repo.RemoveManyAsync(x => true, cancellationToken);
+    }
 }

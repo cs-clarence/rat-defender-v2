@@ -676,6 +676,12 @@ public abstract class
         return Task.CompletedTask;
     }
 
+    public Task RemoveManyAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return DbSet.Where(predicate).ExecuteDeleteAsync(cancellationToken);
+    }
+
     public async Task RemoveByIdAsync(
         TKey id,
         CancellationToken cancellationToken = default
@@ -1110,6 +1116,11 @@ public abstract class
     public void RemoveMany(IEnumerable<TEntity> entities)
     {
         DbSet.RemoveRange(entities);
+    }
+
+    public void RemoveMany(Expression<Func<TEntity, bool>> predicate)
+    {
+        DbSet.Where(predicate).ExecuteDelete();
     }
 
     public void RemoveById(TKey id)

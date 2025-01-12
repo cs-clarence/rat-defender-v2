@@ -32,7 +32,6 @@ public class DetectionSmsNotifier(
         catch (Exception e)
         {
             logger.LogError(e, "An error occurred while sending sms");
-            throw;
         }
     }
 

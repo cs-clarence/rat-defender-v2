@@ -242,6 +242,11 @@ public interface IAsyncRepository<in TKey, TEntity, out TRepository>
         IEnumerable<TEntity> entities,
         CancellationToken cancellationToken = default
     );
+    
+    Task RemoveManyAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default
+    );
 
     Task RemoveByIdAsync(
         TKey id,

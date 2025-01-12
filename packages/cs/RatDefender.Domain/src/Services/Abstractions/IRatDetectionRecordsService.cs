@@ -36,4 +36,10 @@ public interface IRatDetectionRecordsService
     public Task<RatDetection> GetDetectionByIdAsync(
         RatDetectionId id,
         CancellationToken cancellationToken = default);
+    
+    public Task DeleteDetectionAsync(RatDetectionId id,
+        CancellationToken cancellationToken = default);
+
+    public Task DeleteAllDetectionsAsync(
+        CancellationToken cancellationToken = default);
 }
