@@ -3,22 +3,24 @@ using RatDefender.Application.Dtos;
 using RatDefender.Application.Queries;
 using RatDefender.Domain.Services.Abstractions;
 using UnitsNet;
+using UnitsNet.Units;
 
 namespace RatDefender.Application.QueryHandlers;
 
-public class GetThermalImagerReadingsDegreesCelsiusQueryHandler(
+public class GetThermalImagerReadingsDegreeCelsiusQueryHandler(
     IThermalImager thermalImager) : IQueryHandler<
     GetThermalImagerReadingsDegreeCelsiusQuery, ThermalImageDto>
 {
-    private static float[,] ConvertToDegreesCelsius(Temperature[,] image)
+    private static float[][] ConvertToDegreesCelsius(Temperature[,] image)
     {
-        var result = new float[image.GetLength(0), image.GetLength(1)];
+        var result = new float[image.GetLength(0)][];
 
-        for (var x = 0; x < image.GetLength(0); x++)
+        for (var y = 0; y < image.GetLength(1); y++)
         {
-            for (var y = 0; y < image.GetLength(1); y++)
+            result[y] = new float[image.GetLength(0)];
+            for (var x = 0; x < image.GetLength(0); x++)
             {
-                result[x, y] = (float)image[x, y].DegreesCelsius;
+                result[y][x] = (float)image[x, y].DegreesCelsius;
             }
         }
 
@@ -32,6 +34,6 @@ public class GetThermalImagerReadingsDegreesCelsiusQueryHandler(
         var reading = await thermalImager.ReadImageAsync(cancellationToken);
 
         return new ThermalImageDto(ConvertToDegreesCelsius(reading.Image),
-            "DegreesCelsius");
+            TemperatureUnit.DegreeCelsius.ToString());
     }
 }

@@ -36,11 +36,16 @@ public static class RatDefenderApi
         detectionsGroup.MapGet("/daily-summaries", GetDailySummaries)
             .WithName(nameof(GetDailySummaries));
 
-        routes.MapGroup("/thermal-image-readings");
+        var readings = routes.MapGroup("/thermal-image-readings")
+            .WithTags("ThermalImageReadings");
 
-        routes.MapGet("/degrees-celsius",
+        readings.MapGet("/degrees-celsius",
                 GetThermalImagerReadingsDegreesCelsius)
             .WithName(nameof(GetThermalImagerReadingsDegreesCelsius));
+
+        readings.MapGet("/degrees-fahrenheit",
+                GetThermalImagerReadingsDegreesFahrenheit)
+            .WithName(nameof(GetThermalImagerReadingsDegreesFahrenheit));
 
         return routes;
     }
@@ -107,6 +112,16 @@ public static class RatDefenderApi
     {
         return await mediator.Send(
             GetThermalImagerReadingsDegreeCelsiusQuery
+                .Instance);
+    }
+
+    public static async Task<DataResponse<ThermalImageDto>>
+        GetThermalImagerReadingsDegreesFahrenheit(
+            this IMediator mediator
+        )
+    {
+        return await mediator.Send(
+            GetThermalImagerReadingsDegreeFahrenheitQuery
                 .Instance);
     }
 }
