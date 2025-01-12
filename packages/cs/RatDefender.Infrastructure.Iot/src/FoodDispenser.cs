@@ -2,9 +2,9 @@ using System.Device.Pwm;
 using Iot.Device.ServoMotor;
 using Microsoft.Extensions.Options;
 using RatDefender.Domain.Services.Abstractions;
-using RatDetection.Infrastructure.Iot.Configurations;
+using RatDefender.Infrastructure.Iot.Configurations;
 
-namespace RatDetection.Infrastructure.Iot;
+namespace RatDefender.Infrastructure.Iot;
 
 public class FoodDispenser : IFoodDispenser
 {

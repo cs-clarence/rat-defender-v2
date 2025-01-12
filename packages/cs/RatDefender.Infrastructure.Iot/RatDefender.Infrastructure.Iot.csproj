@@ -4,10 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>RatDetection.Infrastructure.Iot</RootNamespace>
+        <RootNamespace>RatDefender.Infrastructure.Iot</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+        
+        <ProjectReference Include="..\Common.HostedServices\Common.HostedServices.csproj" />
         
         <ProjectReference Include="..\Common.Infrastructure.Iot\Common.Infrastructure.Iot.csproj" PrivateAssets="compile" />
         <ProjectReference Include="..\Common.Configuration\Common.Configuration.csproj" PrivateAssets="compile" />

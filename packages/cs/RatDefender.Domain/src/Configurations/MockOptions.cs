@@ -9,4 +9,5 @@ public class MockOptions
     public bool FoodDispenser { get; init; } = false;
     public bool Buzzer { get; init; } = false;
     public bool RatDetectionImageProcessor { get; init; } = false;
+    public bool DetectionNotifier { get; init; } = false;
 }

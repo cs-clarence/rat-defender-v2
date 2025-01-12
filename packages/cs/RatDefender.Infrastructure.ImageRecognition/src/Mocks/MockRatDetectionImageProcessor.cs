@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using RatDefender.Domain.Services.Abstractions;
 
-namespace RatDefender.Infrastructure.ImageRecognition.ImageProcessing.Mocks;
+namespace RatDefender.Infrastructure.ImageRecognition.Mocks;
 
 public class MockRatDetectionImageProcessor(
     ILogger<RatDetectionImageProcessor> logger,
@@ -14,7 +14,7 @@ public class MockRatDetectionImageProcessor(
         CancellationToken ct = default)
     {
         // 200 ms delay to simulate processing time
-        await Task.Delay(10000, ct);
+        await Task.Delay(5000, ct);
         var result = _random.NextInt64(0, 100);
         // simulate low detection rate
         var count = _randAccepted.Contains((ulong)result) ? 1ul : 0ul;
@@ -26,15 +26,15 @@ public class MockRatDetectionImageProcessor(
             logger.LogInformation("Processed image with {count} detections",
                 count);
             return new ProcessResult([
-                new DetectionBox(0, 0, 100, 100, 0.75f, "rat"),
-                new DetectionBox(0, 0, 100, 100, 0.80f, "rat")
+                new DetectionBoundingBox(0, 0, 100, 100, 0.75f, "rat"),
+                new DetectionBoundingBox(0, 0, 100, 100, 0.80f, "rat")
             ]);
         }
         else
         {
             return new ProcessResult([
-                new DetectionBox(0, 0, 100, 100, 0.35f, "rat"),
-                new DetectionBox(0, 0, 100, 100, 0.25f, "rat")
+                new DetectionBoundingBox(0, 0, 100, 100, 0.35f, "rat"),
+                new DetectionBoundingBox(0, 0, 100, 100, 0.25f, "rat")
             ]);
         }
     }

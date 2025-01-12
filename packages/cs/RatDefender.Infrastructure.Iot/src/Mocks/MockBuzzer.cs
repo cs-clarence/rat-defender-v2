@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RatDefender.Domain.Services.Abstractions;
-using RatDetection.Infrastructure.Iot.Configurations;
+using RatDefender.Infrastructure.Iot.Configurations;
 
-namespace RatDetection.Infrastructure.Iot.Mocks;
+namespace RatDefender.Infrastructure.Iot.Mocks;
 
 public class MockBuzzer(
     ILogger<MockBuzzer> logger,
@@ -12,6 +12,7 @@ public class MockBuzzer(
     public async Task BuzzAsync(ushort tone, ushort duration,
         CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Buzz Delay: {delay}", options.Value.BuzzerDelayMs);
         logger.LogInformation("Buzzing {tone}", tone);
         await Task.Delay(duration, cancellationToken);
         logger.LogInformation("Buzzed for {duration}", duration);
@@ -20,6 +21,6 @@ public class MockBuzzer(
     public Task BuzzAsync(CancellationToken cancellationToken = default)
     {
         var opt = options.Value;
-        return BuzzAsync(opt.BuzzerTone, opt.BuzzerDuration, cancellationToken);
+        return BuzzAsync(opt.BuzzerTone, opt.BuzzerDurationMs, cancellationToken);
     }
 }

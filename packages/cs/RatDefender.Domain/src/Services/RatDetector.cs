@@ -56,10 +56,10 @@ public class RatDetector(
 
         if (count > 0 && IsRatDetected(thermReading, opt))
         {
-            var t = Task.Run(() => records.AddDetectionAsync(new RatDetection(
+            var t = records.AddDetectionAsync(new RatDetection(
                 DateTimeOffset.UtcNow,
                 count
-            ), stoppingToken), stoppingToken);
+            ), stoppingToken);
 
             await Task.WhenAll(t,
                 foodDispenser.DispenseAsync(count, stoppingToken));

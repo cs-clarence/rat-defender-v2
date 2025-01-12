@@ -17,7 +17,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" />
+      <ProjectReference Include="..\Common.Configuration\Common.Configuration.csproj" PrivateAssets="compile" />
+      <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" PrivateAssets="compile" />
     </ItemGroup>
 
     <!--    <Target Name="CopyModels" AfterTargets="Build">-->

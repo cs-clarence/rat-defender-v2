@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using RatDefender.Domain.Services.Abstractions;
 
-namespace RatDetection.Infrastructure.Iot.Mocks;
+namespace RatDefender.Infrastructure.Iot.Mocks;
 
 public class MockFoodDispenser(ILogger<MockFoodDispenser> logger) : IFoodDispenser
 {

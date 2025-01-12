@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Common.Configuration.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace RatDetection.Infrastructure.Iot.Configurations;
+namespace RatDefender.Infrastructure.Iot.Configurations;
 
 public record ThermalImagerOptions
 {

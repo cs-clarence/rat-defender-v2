@@ -12,7 +12,7 @@
         <ProjectReference Include="..\RatDefender.HostedServices\RatDefender.HostedServices.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\RatDefender.Infrastructure.ImageRecognition\RatDefender.Infrastructure.ImageRecognition.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj" PrivateAssets="compile"/>
-        <ProjectReference Include="..\RatDetection.Infrastructure.Iot\RatDetection.Infrastructure.Iot.csproj" />
+        <ProjectReference Include="..\RatDefender.Infrastructure.Iot\RatDefender.Infrastructure.Iot.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -10,7 +10,8 @@ namespace RatDefender.HostedServices;
 public class RatDetectionBackgroundService(
     ILogger<RatDetectionBackgroundService> logger,
     IServiceProvider provider,
-    IBuzzer buzzer
+    IBuzzer buzzer,
+    IDetectionNotifier notifier
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -19,29 +20,42 @@ public class RatDetectionBackgroundService(
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                await Task.Delay(50, stoppingToken);
                 await RunAsync(stoppingToken);
             }
         }
         catch (Exception e)
         {
-            logger.LogError(e, "An error occurred while running RatDetectionBackgroundService");
+            logger.LogError(e,
+                "An error occurred while running RatDetectionBackgroundService");
             await Task.Delay(1000, stoppingToken);
         }
     }
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(10, stoppingToken);
-        using var scope = provider.CreateScope();
-        var detector = scope.ServiceProvider
-            .GetRequiredService<IRatDetector>();
-        var uow = scope.ServiceProvider
-            .GetRequiredService<IUnitOfWork>();
+        var detectionCount = 0ul;
+        using (var scope = provider.CreateScope())
+        {
+            var detector = scope.ServiceProvider
+                .GetRequiredService<IRatDetector>();
+            var uow = scope.ServiceProvider
+                .GetRequiredService<IUnitOfWork>();
 
-        await using var uowScope = uow.CreateScope();
-        var res = await detector.RunAsync(stoppingToken);
-        
-        if (res.Detections > 0)
+            await using (uow.CreateScope())
+            {
+                var res = await detector.RunAsync(stoppingToken);
+                detectionCount = res.Detections;
+            }
+
+            if (detectionCount > 0)
+            {
+                await notifier.NotifyAsync(detectionCount, DateTimeOffset.UtcNow,
+                    stoppingToken);
+            }
+        }
+
+        if (detectionCount > 0)
         {
             await buzzer.BuzzAsync(250, 1000, stoppingToken);
         }

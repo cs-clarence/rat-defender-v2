@@ -1,4 +1,4 @@
-namespace RatDefender.Infrastructure.ImageRecognition.ImageProcessing;
+namespace RatDefender.Infrastructure.ImageRecognition;
 
 public class Image
 {

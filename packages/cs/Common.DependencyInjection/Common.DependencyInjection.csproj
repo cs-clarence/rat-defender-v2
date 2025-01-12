@@ -9,6 +9,7 @@
     <ProjectReference Include="..\Common.Application\Common.Application.csproj" PrivateAssets="compile" />
     <ProjectReference Include="..\Common.AspNetCore\Common.AspNetCore.csproj" PrivateAssets="compile" />
     <ProjectReference Include="..\Common.Domain\Common.Domain.csproj" PrivateAssets="compile" />
+    <ProjectReference Include="..\Common.HostedServices\Common.HostedServices.csproj" PrivateAssets="compile" />
     <ProjectReference Include="..\Common.Infrastructure.Persistence\Common.Infrastructure.Persistence.csproj" PrivateAssets="compile" />
   </ItemGroup>
 

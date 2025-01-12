@@ -2,9 +2,9 @@
 using Iot.Device.Amg88xx;
 using Microsoft.Extensions.Options;
 using RatDefender.Domain.Services.Abstractions;
-using RatDetection.Infrastructure.Iot.Configurations;
+using RatDefender.Infrastructure.Iot.Configurations;
 
-namespace RatDetection.Infrastructure.Iot;
+namespace RatDefender.Infrastructure.Iot;
 
 public class ThermalImager : IThermalImager
 {

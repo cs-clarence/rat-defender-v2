@@ -1,8 +1,8 @@
 namespace RatDefender.Domain.Services.Abstractions;
 
-public record struct DetectionBox(int X, int Y, int Width, int Height, float Confidence, string Label);
+public record struct DetectionBoundingBox(int X, int Y, int Width, int Height, float Confidence, string Label);
 
-public record struct ProcessResult(ICollection<DetectionBox> Detections);
+public record struct ProcessResult(ICollection<DetectionBoundingBox> Detections);
 
 public interface IRatDetectionImageProcessor
 {

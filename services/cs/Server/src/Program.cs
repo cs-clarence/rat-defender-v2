@@ -23,6 +23,7 @@ builder.Services.AddOutputCache(o =>
 
 builder.Services.AddUnitOfWork();
 builder.Services.AddRatDefender(builder.Configuration);
+builder.Services.AddTaskQueueBackgroundService();
 
 var app = builder.Build();
 
