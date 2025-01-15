@@ -1,0 +1,50 @@
+[workspace]
+resolver = "3"
+members = ["packages/rs/*"]
+# default-members = ["services/rs/server"]
+
+[workspace.package]
+rust-version = "1.86.0"
+edition = "2024"
+
+[profile.release]
+opt-level = 3            # optimize for speed but increase binary size
+codegen-units = 1        # less parallel compilation but more optimization can be done
+lto = true               # can perform faster but slower compilation
+strip = "debuginfo"      # strip debug info from binary to reduce binary size
+debug = false
+debug-assertions = false
+overflow-checks = false
+
+[profile.dev]
+opt-level = "s"
+
+
+[workspace.dependencies]
+serde = { version = "^1.0.217", features = ["derive", "rc", "alloc"] }
+serde_json = "^1.0.134"
+tracing = "^0.1.41"
+tracing-subscriber = "^0.3.19"
+thiserror = "^2.0.9"
+eyre = "^0.6.12"
+time = { version = "^0.3.37", features = [] }
+derive_more = { version = "^1.0.0", features = ["full"] }
+strum = { version = "^0.26.3", features = ["derive"] }
+tokio = { version = "1.42.0", features = [
+    "rt",
+    "rt-multi-thread",
+    "tracing",
+    "sync",
+    "fs",
+    "net",
+    "socket2",
+    "time",
+    "macros",
+] }
+rand = "0.8.5"
+num-traits = "0.2.19"
+uniffi = { version = "^0.28.3" }
+itertools = { version = "^0.14.0" }
+rayon = { version = "1.10.0" }
+half = { version = "^2.4.1" }
+num_cpus = { version = "^1.16.0" }

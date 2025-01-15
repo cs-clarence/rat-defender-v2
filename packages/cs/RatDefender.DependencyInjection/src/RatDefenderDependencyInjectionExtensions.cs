@@ -109,6 +109,11 @@ public static class RatDefenderDependencyInjectionExtensions
         services.AddOptions<BuzzerOptions>()
             .BindConfiguration(BuzzerOptions.DefaultKey)
             .ValidateOnStart();
+        
+        services.AddSingleton<IValidateOptions<FoodDispenserOptions>, FoodDispenserOptionsValidator>();
+        services.AddOptions<FoodDispenserOptions>()
+            .BindConfiguration(FoodDispenserOptions.DefaultKey)
+            .ValidateOnStart();
 
         var mock = configuration.GetSection(MockOptions.DefaultKey)
             .Get<MockOptions>() ?? new MockOptions();
@@ -154,7 +159,7 @@ public static class RatDefenderDependencyInjectionExtensions
         if (mock.DetectionNotifier)
         {
             services
-                .AddSingleton<IDetectionNotifier, MockDetectionSmsNotifier>();
+                .AddSingleton<IDetectionNotifier, MockDetectionNotifier>();
         }
         else
         {

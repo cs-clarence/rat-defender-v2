@@ -1,3 +1,4 @@
+using Common.AspNetCore.Middlewares;
 using Common.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Server.Extension;
@@ -21,11 +22,21 @@ builder.Services.AddOutputCache(o =>
     o.DefaultExpirationTimeSpan = TimeSpan.FromMinutes(5);
 });
 
+builder.Services.AddProblemDetails();
 builder.Services.AddUnitOfWork();
 builder.Services.AddRatDefender(builder.Configuration);
 builder.Services.AddTaskQueueBackgroundService();
 
 var app = builder.Build();
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+app.UseExceptionHandler();
+
+app.UseMiddleware<DomainExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {

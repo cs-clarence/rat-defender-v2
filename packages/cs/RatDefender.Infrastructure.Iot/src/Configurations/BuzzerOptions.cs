@@ -4,31 +4,30 @@ using Microsoft.Extensions.Options;
 
 namespace RatDefender.Infrastructure.Iot.Configurations;
 
-public class BuzzerOptions
+public record BuzzerOptions
 {
     public static readonly string DefaultKey =
         $"Slices:{typeof(Buzzer).FullNameSection()!}";
     
     [Required]
-    public ushort BuzzerPwmChip { get; init; } = 1;
+    public ushort PwmChipNumber { get; init; } = 1;
+    [Required]
+    public ushort PwmChannel { get; init; } = 0;
     
     [Required]
-    public ushort BuzzerPwmChannel { get; init; } = 0;
+    public ushort PwmFrequency { get; init; } = 50;
     
     [Required]
-    public ushort BuzzerPwmFrequency { get; init; } = 50;
+    public float PwmDutyPercent { get; init; } = 0.5f;
     
     [Required]
-    public float BuzzerPwmDutyPercent { get; init; } = 0.5f;
+    public ushort BuzzTone { get; init; } = 250;
     
     [Required]
-    public ushort BuzzerTone { get; init; } = 250;
+    public ushort BuzzDurationMs { get; init; } = 1000; // 1 second
     
     [Required]
-    public ushort BuzzerDurationMs { get; init; } = 1000; // 1 second
-    
-    [Required]
-    public ulong BuzzerDelayMs { get; init; } = 30_000; // 30 seconds
+    public ulong BuzzDelayMs { get; init; } = 30_000; // 30 seconds
 }
 
 [OptionsValidator]

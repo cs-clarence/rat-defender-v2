@@ -3,7 +3,7 @@ using RatDefender.Domain.Services.Abstractions;
 
 namespace RatDefender.Infrastructure.Iot.Mocks;
 
-public class MockDetectionSmsNotifier(ILogger<MockDetectionSmsNotifier> logger)
+public class MockDetectionNotifier(ILogger<MockDetectionNotifier> logger)
     : IDetectionNotifier
 {
     public async Task NotifyAsync(ulong detectionCount = 0,
@@ -11,7 +11,9 @@ public class MockDetectionSmsNotifier(ILogger<MockDetectionSmsNotifier> logger)
         CancellationToken cancellationToken = default)
     {
         await Task.Delay(1000, cancellationToken); // simulate delay
-        logger.LogInformation("NOTIFICATION: Detected {count} rats at {time}",
-            detectionCount, detectedAt);
+        var tz = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+        var now = TimeZoneInfo.ConvertTime(detectedAt ?? DateTimeOffset.UtcNow, tz);
+        logger.LogInformation("NOTIFICATION: Detected {count} rat(s) at {time}",
+            detectionCount, now);
     }
 }

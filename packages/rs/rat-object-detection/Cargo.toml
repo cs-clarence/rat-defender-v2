@@ -1,0 +1,46 @@
+[package]
+name = "rat-object-detection"
+rust-version.workspace = true
+edition.workspace = true
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+name = "rat_object_detection"
+
+[features]
+onnx_cuda = ["ort/cuda"]
+onnx_rocm = ["ort/rocm"]
+onnx_rknpu = ["ort/rknpu"]
+blas = ["ndarray/blas"]
+default = ["blas"]
+debug_embed = ["rust-embed/debug-embed"]
+
+[dependencies]
+ndarray = { version = "0.16.1", features = ["rayon"] }
+opencv = "0.94.1"
+ort = { version = "2.0.0-rc.9" }
+rayon = { workspace = true }
+rust-embed = { version = "8.5.0", features = [
+    "compression",
+    "include-exclude",
+] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+thiserror = { workspace = true }
+eyre = { workspace = true }
+time = { workspace = true }
+rand = { workspace = true }
+itertools = { workspace = true }
+half = { workspace = true }
+num-traits = { workspace = true }
+tokio = { workspace = true }
+uniffi = { workspace = true }
+num_cpus = { workspace = true }
+
+
+[build-dependencies]
+uniffi = { workspace = true, features = ["build"] }

@@ -14,6 +14,8 @@ public class DetectionSmsNotifier(
     private async Task SendSms(ulong detectionCount, DateTimeOffset? detectedAt, CancellationToken cancellationToken = default)
     {
         detectedAt ??= DateTimeOffset.UtcNow;
+        var tz = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+        detectedAt = TimeZoneInfo.ConvertTime(detectedAt.Value, tz);
         var opt = options.Value;
         var message = opt.MessageFormat
             .Replace("{count}", detectionCount.ToString())

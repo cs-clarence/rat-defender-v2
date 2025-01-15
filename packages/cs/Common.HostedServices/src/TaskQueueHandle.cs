@@ -2,17 +2,17 @@ using Common.HostedServices.Abstractions;
 
 namespace Common.HostedServices;
 
-public class TaskQueueHandle : ITaskQueueHandle
+public class TaskQueueHandle(TaskQueueChannel channel) : ITaskQueueHandle
 {
     public Task<Guid> EnqueueAsync(Func<ValueTask> task,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return channel.SendAsync(task, cancellationToken);
     }
 
     public Task DequeueAsync(Guid taskId,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }

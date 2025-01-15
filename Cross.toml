@@ -1,0 +1,18 @@
+# ------------ DEFAULTS ------------
+[build]
+build-std = true                               # use builtin cross compile feature instead of xargo
+xargo = false                                  # do not use xargo
+default-target = "x86_64-unknown-linux-gnu"    # use this target if none is explicitly provided
+# additional commands to run prior to building the package
+pre-build = []                                 
+env.volumes = []
+env.passthrough = []
+dockerfile.file = "./docker/cross-compile/Dockerfile"
+dockerfile.context = "."
+dockerfile.build-args = { ARCH = "amd64" }
+
+# ------------ AARCH64 ------------
+[target.aarch64-unknown-linux-gnu]
+dockerfile.file = "./docker/cross-compile/Dockerfile"
+dockerfile.context = "."
+dockerfile.build-args = { ARCH = "arm64" }

@@ -1,0 +1,9 @@
+{
+    "name": "@repo/rat-object-detection",
+    "scripts": {
+        "cargo-build": "with-env -- 'cargo build --release --lib'",
+        "mkdir-build": "with-env -- 'mkdir -p ./build/release'",
+        "copy-target-output-to-project-dir": "with-env -- 'cp ../../../target/release/librat_object_detection.so ./build/release/'",
+        "build": "bun run cargo-build && bun run mkdir-build && bun run copy-target-output-to-project-dir"
+    }
+}

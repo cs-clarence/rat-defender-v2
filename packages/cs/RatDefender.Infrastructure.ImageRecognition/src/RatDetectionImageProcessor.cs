@@ -11,7 +11,7 @@ public class RatDetectionImageProcessor: IRatDetectionImageProcessor, IDisposabl
     private readonly ILogger<RatDetectionImageProcessor> _logger;
     private readonly ImageHolder _holder;
     private readonly IOptions<RatDetectionImageProcessorOptions> _options;
-    private readonly InferenceSession _session;
+    // private readonly InferenceSession _session;
     
     public RatDetectionImageProcessor(ILogger<RatDetectionImageProcessor> logger,
         ImageHolder holder, IOptions<RatDetectionImageProcessorOptions> options)
@@ -21,7 +21,7 @@ public class RatDetectionImageProcessor: IRatDetectionImageProcessor, IDisposabl
         _options = options;
         var opt = options.Value;
         
-        _session = new InferenceSession(opt.OnnxModelPath);
+        // _session = new InferenceSession(opt.OnnxModelPath);
     }
 
     public Task<ProcessResult> ProcessImageAsync(
@@ -32,6 +32,6 @@ public class RatDetectionImageProcessor: IRatDetectionImageProcessor, IDisposabl
 
     public void Dispose()
     {
-        _session.Dispose();
+        // _session.Dispose();
     }
 }

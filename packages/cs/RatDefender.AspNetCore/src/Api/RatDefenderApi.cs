@@ -47,6 +47,15 @@ public static class RatDefenderApi
                 GetThermalImagerReadingsDegreesFahrenheit)
             .WithName(nameof(GetThermalImagerReadingsDegreesFahrenheit));
 
+        routes.MapPost("/food-dispenser/dispense", DispenseFood)
+            .WithName(nameof(DispenseFood)).WithTags("FoodDispenser");
+        
+        routes.MapPost("/buzzer/buzz", Buzz)
+            .WithName(nameof(Buzz)).WithTags("Buzzer");
+        
+        routes.MapPost("/notifier/notify-detection", NotifyDetection)
+            .WithName(nameof(NotifyDetection)).WithTags("Notifier");
+
         return routes;
     }
 
@@ -123,5 +132,35 @@ public static class RatDefenderApi
         return await mediator.Send(
             GetThermalImagerReadingsDegreeFahrenheitQuery
                 .Instance);
+    }
+    
+    public static async Task<SuccessResponse> DispenseFood(
+        this IMediator mediator,
+        DispenseCommand command
+    )
+    {
+        await mediator.Send(command);
+
+        return Responses.Success();
+    }
+    
+    public static async Task<SuccessResponse> Buzz(
+        this IMediator mediator,
+        BuzzCommand command
+    )
+    {
+        await mediator.Send(command);
+
+        return Responses.Success();
+    }
+    
+    public static async Task<SuccessResponse> NotifyDetection(
+        this IMediator mediator,
+        NotifyDetectionCommand command
+    )
+    {
+        await mediator.Send(command);
+
+        return Responses.Success();
     }
 }

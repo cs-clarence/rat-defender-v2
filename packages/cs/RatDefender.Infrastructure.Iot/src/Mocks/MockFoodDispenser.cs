@@ -3,15 +3,16 @@ using RatDefender.Domain.Services.Abstractions;
 
 namespace RatDefender.Infrastructure.Iot.Mocks;
 
-public class MockFoodDispenser(ILogger<MockFoodDispenser> logger) : IFoodDispenser
+public class MockFoodDispenser(ILogger<MockFoodDispenser> logger)
+    : IFoodDispenser
 {
-    public async Task DispenseAsync(ulong count,
+    public async Task DispenseAsync(ulong servings = 0,
         CancellationToken cancellationToken = default)
     {
-        while (count > 0)
+        while (servings > 0)
         {
             logger.LogInformation("Dispensing food");
-            count--;
+            servings--;
             await Task.Delay(1000, cancellationToken);
         }
     }

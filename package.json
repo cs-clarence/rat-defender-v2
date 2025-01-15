@@ -13,6 +13,7 @@
     "workspaces": [
         "packages/ts/*",
         "packages/cs/*",
+        "packages/rs/*",
         "packages/atlas/*",
         "apps/ts/*",
         "services/ts/*",

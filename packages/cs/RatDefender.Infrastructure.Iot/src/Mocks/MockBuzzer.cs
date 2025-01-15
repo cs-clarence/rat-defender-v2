@@ -12,7 +12,7 @@ public class MockBuzzer(
     public async Task BuzzAsync(ushort tone, ushort duration,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Buzz Delay: {delay}", options.Value.BuzzerDelayMs);
+        logger.LogInformation("Buzz Delay: {delay}", options.Value.BuzzDelayMs);
         logger.LogInformation("Buzzing {tone}", tone);
         await Task.Delay(duration, cancellationToken);
         logger.LogInformation("Buzzed for {duration}", duration);
@@ -21,6 +21,6 @@ public class MockBuzzer(
     public Task BuzzAsync(CancellationToken cancellationToken = default)
     {
         var opt = options.Value;
-        return BuzzAsync(opt.BuzzerTone, opt.BuzzerDurationMs, cancellationToken);
+        return BuzzAsync(opt.BuzzTone, opt.BuzzDurationMs, cancellationToken);
     }
 }

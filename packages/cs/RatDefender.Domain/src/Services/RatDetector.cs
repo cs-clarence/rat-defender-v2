@@ -52,9 +52,15 @@ public class RatDetector(
                 ? 1u
                 : 0u;
 
+        if (count == 0)
+        {
+            return new DetectionResult(count);
+        }
+
+
         var thermReading = await thermalImager.ReadImageAsync(stoppingToken);
 
-        if (count > 0 && IsRatDetected(thermReading, opt))
+        if (IsRatDetected(thermReading, opt) || !opt.UseThermalSensor)
         {
             var t = records.AddDetectionAsync(new RatDetection(
                 DateTimeOffset.UtcNow,

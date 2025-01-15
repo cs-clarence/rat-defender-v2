@@ -26,6 +26,8 @@ public class RatDetectionBackgroundService(
         }
         catch (Exception e)
         {
+            if (e is OperationCanceledException) return;
+            
             logger.LogError(e,
                 "An error occurred while running RatDetectionBackgroundService");
             await Task.Delay(1000, stoppingToken);

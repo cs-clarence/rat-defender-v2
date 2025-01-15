@@ -9,7 +9,7 @@ public record ThermalImagerOptions
     public static readonly string DefaultKey =
         $"Slices:{typeof(ThermalImager).FullNameSection()!}";
 
-    [Range(0, 7)] public int BusId { get; init; } = 1;
+    [Range(0, 7)] public int BusId { get; init; } = 2;
     public int? DeviceAddress { get; init; }
 }
 

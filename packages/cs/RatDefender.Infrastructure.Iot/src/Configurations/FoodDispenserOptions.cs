@@ -4,23 +4,22 @@ using Microsoft.Extensions.Options;
 
 namespace RatDefender.Infrastructure.Iot.Configurations;
 
-public class FoodDispenserOptions
+public record FoodDispenserOptions
 {
     public static readonly string DefaultKey =
         $"Slices:{typeof(FoodDispenser).FullNameSection()!}";
 
-    [Range(0, 180)] public ushort DispenseAngle { get; init; } = 90;
+    [Range(0, 180)] public ushort ServoDispenseAngle { get; init; } = 90;
 
-    public uint RotationDelay { get; init; } = 1000;
+    public uint ServoRotationDelay { get; init; } = 1000;
     public uint DispenseDelay { get; init; } = 1000;
-
-    public ushort ServoPwmChip { get; init; } = 0;
-    public ushort ServoPwmChannel { get; init; } = 0;
-    public ushort ServoPwmFrequency { get; init; } = 50;
-    public float ServoPwmDutyPercent { get; init; } = 0.5f;
-    public double ServoMaximumAngle { get; init; } = 180f;
-    public double MinimumPulseWidthMicroseconds { get; init; } = 1000d;
-    public double MaximumPulseWidthMicroseconds { get; init; } = 2000d;
+    public ushort PwmChipNumber { get; init; } = 2;
+    public ushort PwmChannel { get; init; } = 0;
+    public ushort PwmFrequency { get; init; } = 50;
+    public float PwmDutyPercent { get; init; } = 0.5f;
+    public ushort ServoMaximumAngle { get; init; } = 180;
+    public double ServoMinimumPulseWidthMicroseconds { get; init; } = 1000d;
+    public double ServoMaximumPulseWidthMicroseconds { get; init; } = 2000d;
 }
 
 [OptionsValidator]
