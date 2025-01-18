@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using RatDefender.Application.Commands;
 using RatDefender.Application.Queries;
 using RatDefender.Application.Dtos;
+using RatDefender.AspNetCore.Results;
 
 namespace RatDefender.AspNetCore.Api;
 
@@ -50,15 +51,18 @@ public static class RatDefenderApi
 
         routes.MapPost("/food-dispenser/dispense", DispenseFood)
             .WithName(nameof(DispenseFood)).WithTags("FoodDispenser");
-        
+
         routes.MapPost("/buzzer/buzz", Buzz)
             .WithName(nameof(Buzz)).WithTags("Buzzer");
-        
+
         routes.MapPost("/notifier/notify-detection", NotifyDetection)
             .WithName(nameof(NotifyDetection)).WithTags("Notifier");
+
+        routes.MapGet("/images/current.jpeg", GetCurrentImageJpeg)
+            .WithName(nameof(GetCurrentImageJpeg)).WithTags("Images");
         
-        routes.MapGet("/images/current.jpeg", GetCurrentImage)
-            .WithName(nameof(GetCurrentImage)).WithTags("Images");
+        routes.MapGet("/images/current.mjpeg", GetCurrentImageMotionJpeg)
+            .WithName(nameof(GetCurrentImageMotionJpeg)).WithTags("Images");
 
         return routes;
     }
@@ -137,7 +141,7 @@ public static class RatDefenderApi
             GetThermalImagerReadingsDegreeFahrenheitQuery
                 .Instance);
     }
-    
+
     public static async Task<SuccessResponse> DispenseFood(
         this IMediator mediator,
         DispenseCommand command
@@ -147,7 +151,7 @@ public static class RatDefenderApi
 
         return Responses.Success();
     }
-    
+
     public static async Task<SuccessResponse> Buzz(
         this IMediator mediator,
         BuzzCommand command
@@ -157,7 +161,7 @@ public static class RatDefenderApi
 
         return Responses.Success();
     }
-    
+
     public static async Task<SuccessResponse> NotifyDetection(
         this IMediator mediator,
         NotifyDetectionCommand command
@@ -167,12 +171,29 @@ public static class RatDefenderApi
 
         return Responses.Success();
     }
-    
-    public static async Task<FileContentHttpResult> GetCurrentImage(
+
+    public static async Task<FileContentHttpResult> GetCurrentImageJpeg(
         this IMediator mediator
     )
     {
         var img = await mediator.Send(GetCurrentImageQuery.Instance);
         return TypedResults.File(img.Buffer, "image/jpeg");
+    }
+
+    private static async IAsyncEnumerable<byte[]> MapCurrentImageStream(
+        IAsyncEnumerable<ImageDto> stream)
+    {
+        await foreach (var item in stream)
+        {
+            yield return item.Buffer;
+        }
+    }
+
+    public static Task<MotionJpegResult> GetCurrentImageMotionJpeg(
+        this IMediator mediator
+    )
+    {
+        var stream = mediator.CreateStream(GetCurrentImageStreamQuery.Instance);
+        return Task.FromResult(new MotionJpegResult(MapCurrentImageStream(stream)));
     }
 }
