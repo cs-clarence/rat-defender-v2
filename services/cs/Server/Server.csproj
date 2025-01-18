@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.*" PrivateAssets="Compile"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.*"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.*" PrivateAssets="All"/>
         <PackageReference Include="Mediator.SourceGenerator" Version="2.*">
             <PrivateAssets>all</PrivateAssets>
@@ -16,11 +16,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\packages\cs\Common.AspNetCore\Common.AspNetCore.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\..\..\packages\cs\Common.AspNetCore\Common.AspNetCore.csproj"/>
         <ProjectReference Include="..\..\..\packages\cs\Common.DependencyInjection\Common.DependencyInjection.csproj"/>
-        <ProjectReference Include="..\..\..\packages\cs\RatDefender.AspNetCore\RatDefender.AspNetCore.csproj" PrivateAssets="compile"/>
-        <ProjectReference Include="..\..\..\packages\cs\RatDefender.DependencyInjection\RatDefender.DependencyInjection.csproj" PrivateAssets="compile"/>
-        <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj" PrivateAssets="compile"/>
-        <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.AspNetCore\RatDefender.AspNetCore.csproj"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.DependencyInjection\RatDefender.DependencyInjection.csproj"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj"/>
+        <ProjectReference
+            Condition="$(RuntimeIdentifier) == 'linux-x64'"
+            Include="..\..\..\packages\cs\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64.csproj"/>
+        <ProjectReference
+            Condition="$(RuntimeIdentifier) == 'linux-arm64'"
+            Include="..\..\..\packages\cs\RatDefender.Infrastructure.ObjectDetection.runtime.linux-arm64\RatDefender.Infrastructure.ObjectDetection.runtime.linux-arm64.csproj"/>
     </ItemGroup>
 </Project>

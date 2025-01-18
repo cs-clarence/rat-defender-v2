@@ -20,7 +20,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
 
     public RatDetectionImageProcessor(
         ILogger<RatDetectionImageProcessor> logger,
-        ImageHolder holder, 
+        ImageHolder holder,
         IOptions<RatDetectionImageProcessorOptions> options,
         IOptions<RatDetectorOptions> inferenceOptions)
     {
@@ -30,27 +30,31 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
         _options = options;
         _inferenceOptions = inferenceOptions;
         var opt = options.Value;
-        
-        var modelSource = opt.OnnxModelPath ;
-        
+
+        _logger.LogInformation("{source}", opt);
+
+        var modelSource = opt.OnnxModelPath;
+
         if (opt.VideoCaptureSource == VideoCaptureSource.DeviceIndex)
         {
             if (modelSource is not null)
             {
-                _detector = RatObjectDetectionMethods.NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
-                    opt.VideoCaptureIndex ?? 0,
-                    null
-                );
+                _detector = RatObjectDetectionMethods
+                    .NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
+                        opt.VideoCaptureIndex ?? 0,
+                        null
+                    );
             }
             else
             {
-                _detector = RatObjectDetectionMethods.NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
-                    opt.VideoCaptureIndex ?? 0,
-                    null
-                );
+                _detector = RatObjectDetectionMethods
+                    .NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
+                        opt.VideoCaptureIndex ?? 0,
+                        null
+                    );
             }
         }
-        
+
         if (opt.VideoCaptureSource == VideoCaptureSource.FilePath)
         {
             if (modelSource is not null)
@@ -63,13 +67,14 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
             }
             else
             {
-                _detector = RatObjectDetectionMethods.NewRatDetectorFromDefaultModelAndVideoCaptureFile(
-                    opt.VideoCaptureFilePath ?? "",
-                    null
-                );
+                _detector = RatObjectDetectionMethods
+                    .NewRatDetectorFromDefaultModelAndVideoCaptureFile(
+                        opt.VideoCaptureFilePath ?? "",
+                        null
+                    );
             }
         }
-        
+
         if (_detector is null)
         {
             throw new Exception("Could not create RatDetector");
@@ -79,8 +84,17 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
     public Task<ProcessResult> ProcessImageAsync(
         CancellationToken ct = default)
     {
-        var opt = _inferenceOptions.Value;
-        var result = _detector.Run(new RunArgs(opt.MinimumConfidence, true, true));
+        var infer = _inferenceOptions.Value;
+        var opt = _options.Value;
+        var result = _detector.Run(
+            new RunArgs(
+                infer.MinimumConfidence,
+                opt.ShowLabel,
+                opt.ShowConfidence,
+                new CameraResolution(opt.VideoCaptureWidth,
+                    opt.VideoCaptureHeight, opt.VideoCaptureFps),
+                opt.DetectRats
+            ));
         var detections = result.detections.Select(i => new DetectionBoundingBox
             {
                 Confidence = i.probability,

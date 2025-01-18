@@ -1633,6 +1633,39 @@ class FfiConverterTypeBoundingBox : FfiConverterRustBuffer<BoundingBox>
     }
 }
 
+internal record CameraResolution(uint @width, uint @height, uint @fps) { }
+
+class FfiConverterTypeCameraResolution
+    : FfiConverterRustBuffer<CameraResolution>
+{
+    public static FfiConverterTypeCameraResolution INSTANCE =
+        new FfiConverterTypeCameraResolution();
+
+    public override CameraResolution Read(BigEndianStream stream)
+    {
+        return new CameraResolution(
+            @width: FfiConverterUInt32.INSTANCE.Read(stream),
+            @height: FfiConverterUInt32.INSTANCE.Read(stream),
+            @fps: FfiConverterUInt32.INSTANCE.Read(stream)
+        );
+    }
+
+    public override int AllocationSize(CameraResolution value)
+    {
+        return 0
+            + FfiConverterUInt32.INSTANCE.AllocationSize(value.@width)
+            + FfiConverterUInt32.INSTANCE.AllocationSize(value.@height)
+            + FfiConverterUInt32.INSTANCE.AllocationSize(value.@fps);
+    }
+
+    public override void Write(CameraResolution value, BigEndianStream stream)
+    {
+        FfiConverterUInt32.INSTANCE.Write(value.@width, stream);
+        FfiConverterUInt32.INSTANCE.Write(value.@height, stream);
+        FfiConverterUInt32.INSTANCE.Write(value.@fps, stream);
+    }
+}
+
 internal record Detection(
     String @label,
     float @probability,
@@ -1674,7 +1707,9 @@ class FfiConverterTypeDetection : FfiConverterRustBuffer<Detection>
 internal record RunArgs(
     float? @minConfidence,
     bool? @showLabels,
-    bool? @showConfidence
+    bool? @showConfidence,
+    CameraResolution? @cameraResolution,
+    bool? @detectRats
 ) { }
 
 class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
@@ -1687,7 +1722,11 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
         return new RunArgs(
             @minConfidence: FfiConverterOptionalFloat.INSTANCE.Read(stream),
             @showLabels: FfiConverterOptionalBoolean.INSTANCE.Read(stream),
-            @showConfidence: FfiConverterOptionalBoolean.INSTANCE.Read(stream)
+            @showConfidence: FfiConverterOptionalBoolean.INSTANCE.Read(stream),
+            @cameraResolution: FfiConverterOptionalTypeCameraResolution.INSTANCE.Read(
+                stream
+            ),
+            @detectRats: FfiConverterOptionalBoolean.INSTANCE.Read(stream)
         );
     }
 
@@ -1702,6 +1741,12 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
             )
             + FfiConverterOptionalBoolean.INSTANCE.AllocationSize(
                 value.@showConfidence
+            )
+            + FfiConverterOptionalTypeCameraResolution.INSTANCE.AllocationSize(
+                value.@cameraResolution
+            )
+            + FfiConverterOptionalBoolean.INSTANCE.AllocationSize(
+                value.@detectRats
             );
     }
 
@@ -1713,6 +1758,11 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
             value.@showConfidence,
             stream
         );
+        FfiConverterOptionalTypeCameraResolution.INSTANCE.Write(
+            value.@cameraResolution,
+            stream
+        );
+        FfiConverterOptionalBoolean.INSTANCE.Write(value.@detectRats, stream);
     }
 }
 
@@ -2089,6 +2139,53 @@ class FfiConverterOptionalBoolean : FfiConverterRustBuffer<bool?>
         {
             stream.WriteByte(1);
             FfiConverterBoolean.INSTANCE.Write((bool)value, stream);
+        }
+    }
+}
+
+class FfiConverterOptionalTypeCameraResolution
+    : FfiConverterRustBuffer<CameraResolution?>
+{
+    public static FfiConverterOptionalTypeCameraResolution INSTANCE =
+        new FfiConverterOptionalTypeCameraResolution();
+
+    public override CameraResolution? Read(BigEndianStream stream)
+    {
+        if (stream.ReadByte() == 0)
+        {
+            return null;
+        }
+        return FfiConverterTypeCameraResolution.INSTANCE.Read(stream);
+    }
+
+    public override int AllocationSize(CameraResolution? value)
+    {
+        if (value == null)
+        {
+            return 1;
+        }
+        else
+        {
+            return 1
+                + FfiConverterTypeCameraResolution.INSTANCE.AllocationSize(
+                    (CameraResolution)value
+                );
+        }
+    }
+
+    public override void Write(CameraResolution? value, BigEndianStream stream)
+    {
+        if (value == null)
+        {
+            stream.WriteByte(0);
+        }
+        else
+        {
+            stream.WriteByte(1);
+            FfiConverterTypeCameraResolution.INSTANCE.Write(
+                (CameraResolution)value,
+                stream
+            );
         }
     }
 }

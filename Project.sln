@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.HostedServices", "pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64", "packages\cs\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64.csproj", "{E4033F45-8A1D-4EAC-913B-FF467C36E749}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatDefender.Infrastructure.ObjectDetection.runtime.linux-arm64", "packages\cs\RatDefender.Infrastructure.ObjectDetection.runtime.linux-arm64\RatDefender.Infrastructure.ObjectDetection.runtime.linux-arm64.csproj", "{BFA44867-FD62-4F55-B0AD-DAF645930364}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -188,6 +190,10 @@ Global
 		{E4033F45-8A1D-4EAC-913B-FF467C36E749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4033F45-8A1D-4EAC-913B-FF467C36E749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4033F45-8A1D-4EAC-913B-FF467C36E749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFA44867-FD62-4F55-B0AD-DAF645930364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFA44867-FD62-4F55-B0AD-DAF645930364}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFA44867-FD62-4F55-B0AD-DAF645930364}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFA44867-FD62-4F55-B0AD-DAF645930364}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6D1365B2-47F8-480E-9B3E-842D074C56EC} = {6B66033C-440C-40CE-8EFF-C90EA4BC85F4}
@@ -220,5 +226,6 @@ Global
 		{FB415E5B-B341-47CD-811D-F2E1C52B4042} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
 		{9F044913-CBA7-4136-82E4-F16C7BF0D190} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
 		{E4033F45-8A1D-4EAC-913B-FF467C36E749} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
+		{BFA44867-FD62-4F55-B0AD-DAF645930364} = {8A44ABED-FF5C-4AA0-98DE-7468BA4CC85F}
 	EndGlobalSection
 EndGlobal

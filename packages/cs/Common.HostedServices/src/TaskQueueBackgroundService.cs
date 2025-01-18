@@ -22,6 +22,8 @@ public class TaskQueueBackgroundService(
                     await Task.WhenAll(_currentTasks);
                     _currentTasks.Clear();
                 }
+
+                if (stoppingToken.IsCancellationRequested) break;
             }
             catch (Exception e)
             {

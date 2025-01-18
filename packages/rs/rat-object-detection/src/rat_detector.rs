@@ -86,29 +86,6 @@ pub struct SessionOptions {
     pub optimization_level: Option<SessionGraphOptimizationLevel>,
 }
 
-#[derive(Debug, Clone, Copy, uniffi::Enum)]
-pub enum FrameFormat {
-    Jpeg,
-    Png,
-}
-
-#[derive(Debug, uniffi::Record)]
-pub struct RunResult {
-    pub detections: Vec<Detection>,
-    pub frame: Vec<u8>,
-    pub frame_format: FrameFormat,
-}
-
-#[derive(Debug, uniffi::Record, Default)]
-pub struct RunArgs {
-    /// The minimum confidence for a detection to be considered a valid detection.
-    pub min_confidence: Option<f32>,
-    /// Whether to show labels on the detections.
-    pub show_labels: Option<bool>,
-    /// Whether to show confidence on the detections.
-    pub show_confidence: Option<bool>,
-}
-
 #[uniffi::export]
 pub fn new_rat_detector_from_files(
     model_file: String,
@@ -249,165 +226,246 @@ pub struct RatDetector {
     pub(crate) video_capture: Arc<Mutex<VideoCapture>>,
 }
 
+#[derive(Debug, Clone, Copy, uniffi::Enum)]
+pub enum FrameFormat {
+    Jpeg,
+    Png,
+}
+
+#[derive(Debug, uniffi::Record)]
+pub struct RunResult {
+    pub detections: Vec<Detection>,
+    pub frame: Vec<u8>,
+    pub frame_format: FrameFormat,
+}
+
+#[derive(Debug, Clone, Copy, uniffi::Record)]
+pub struct CameraResolution {
+    pub width: u32,
+    pub height: u32,
+    pub fps: u32,
+}
+
+impl Default for CameraResolution {
+    fn default() -> Self {
+        Self {
+            width: 640,
+            height: 480,
+            fps: 30,
+        }
+    }
+}
+
+#[derive(Debug, uniffi::Record, Default)]
+pub struct RunArgs {
+    /// The minimum confidence for a detection to be considered a valid detection.
+    pub min_confidence: Option<f32>,
+    /// Whether to show labels on the detections.
+    pub show_labels: Option<bool>,
+    /// Whether to show confidence on the detections.
+    pub show_confidence: Option<bool>,
+    pub camera_resolution: Option<CameraResolution>,
+    pub detect_rats: Option<bool>,
+}
+
 #[uniffi::export]
 impl RatDetector {
     pub fn run(&self, args: Option<RunArgs>) -> GenericResult<RunResult> {
         let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
+        let args = args.unwrap_or_default();
 
-        let video_height = cam
+        let camera_resolution = args.camera_resolution.unwrap_or_default();
+
+        let mut video_height = cam
             .get(videoio::CAP_PROP_FRAME_HEIGHT)
             .map_err_to_generic_error()? as f32;
-        let video_width = cam
+        let mut video_width = cam
             .get(videoio::CAP_PROP_FRAME_WIDTH)
             .map_err_to_generic_error()? as f32;
+        let video_fps =
+            cam.get(videoio::CAP_PROP_FPS).map_err_to_generic_error()? as f32;
 
-        let mut frame = Mat::default();
-        let mut converted = Mat::default();
-        let mut resized = Mat::default();
-        let mut boxes = Vec::new();
-
-        cam.read(&mut frame).map_err_to_generic_error()?;
-
-        imgproc::resize_def(&frame, &mut resized, core::Size {
-            height: 640,
-            width: 640,
-        })
-        .map_err_to_generic_error()?;
-
-        imgproc::cvt_color_def(
-            &resized,
-            &mut converted,
-            imgproc::COLOR_BGR2RGB,
-        )
-        .map_err_to_generic_error()?;
-
-        if !frame.is_continuous() {
-            bail!("Frame is not continuous");
-        }
-
-        let mut mat = Mat::new_rows_cols_with_default(
-            640,
-            640,
-            core::CV_32FC3,
-            core::Scalar::all(0.0),
-        )
-        .map_err_to_generic_error()?;
-        converted
-            .convert_to(&mut mat, core::CV_32FC3, 1. / 255., 0.)
-            .map_err_to_generic_error()?;
-
-        let input = Array::<f32, Ix3>::try_from_cv(&mat)
-            .map_err(|e| GenericError::new(e.to_string()))?
-            .into_shape_with_order((640, 640, 3, 1))
-            .map_err_to_generic_error()?;
-
-        let input = input.permuted_axes((3, 2, 0, 1));
-
-        let input = input.view();
-
-        let result = self
-            .model
-            .run(ort::inputs!["images" => input].map_err_to_generic_error()?)
-            .map_err_to_generic_error()?;
-
-        let output = result["output0"]
-            .try_extract_tensor::<f32>()
-            .map_err_to_generic_error()?;
-        let output = output.t();
-        let output = output.slice(s![.., .., 0]);
-
-        let args = args.unwrap_or_default();
-        let min_confidence = args.min_confidence.unwrap_or(0.5);
-        for row in output.axis_iter(Axis(0)) {
-            let row = row.iter().copied().collect::<Vec<_>>();
-            let (class_id, prob) = row
-                .iter()
-                // skip bounding box coordinates
-                .skip(4)
-                .enumerate()
-                .map(|(index, value)| (index, *value))
-                .reduce(|accum, row| if row.1 > accum.1 { row } else { accum })
-                .ok_or_generic_error(
-                    "Could not find the class with the highest probability",
-                )?;
-            if prob < min_confidence {
-                continue;
-            }
-            let label = YOLOV11_CLASS_LABELS[class_id];
-            let label = label.to_string();
-
-            let w = row[2] / 640. * video_width;
-            let h = row[3] / 640. * video_height;
-
-            let x = (row[0] / 640. * video_width) - (w / 2.);
-            let y = (row[1] / 640. * video_height) - (h / 2.);
-            let bounding_box = BoundingBox {
-                height: h as u64,
-                width: w as u64,
-                x: x as u64,
-                y: y as u64,
-            };
-            let detection = Detection {
-                bounding_box,
-                label: label.to_string(),
-                probability: prob,
-            };
-            boxes.push(detection);
-        }
-
-        for boxes in boxes.iter() {
-            let Detection {
-                label,
-                probability,
-                bounding_box,
-            } = boxes;
-
-            let (x, y, w, h) = (
-                bounding_box.x as i32,
-                bounding_box.y as i32,
-                bounding_box.width as i32,
-                bounding_box.height as i32,
-            );
-
-            let rect = core::Rect {
-                height: h,
-                width: w,
-                x,
-                y,
-            };
-
-            imgproc::rectangle(
-                &mut frame,
-                rect,
-                core::Scalar::new(255., 0., 0., 255.),
-                2,
-                imgproc::LINE_AA,
-                0,
+        if video_height != camera_resolution.height as f32 {
+            cam.set(
+                videoio::CAP_PROP_FRAME_HEIGHT,
+                camera_resolution.height as f64,
             )
             .map_err_to_generic_error()?;
 
-            let show_labels = args.show_labels.unwrap_or(true);
+            video_height = camera_resolution.height as f32;
+        }
 
-            if show_labels {
-                let show_confidence = args.show_confidence.unwrap_or(true);
+        if video_width != camera_resolution.width as f32 {
+            cam.set(
+                videoio::CAP_PROP_FRAME_WIDTH,
+                camera_resolution.width as f64,
+            )
+            .map_err_to_generic_error()?;
 
-                let label = if show_confidence {
-                    format!("{}: {}%", label, probability * 100.)
-                } else {
-                    label.to_string()
-                };
-                imgproc::put_text(
-                    &mut frame,
-                    &label,
-                    core::Point { x, y },
-                    imgproc::FONT_HERSHEY_PLAIN,
-                    1.,
-                    core::Scalar::new(255., 0., 0., 255.),
-                    1,
-                    imgproc::LINE_AA,
-                    false,
+            video_width = camera_resolution.width as f32;
+        }
+
+        if video_fps != camera_resolution.fps as f32 {
+            cam.set(videoio::CAP_PROP_FPS, camera_resolution.fps as f64)
+                .map_err_to_generic_error()?;
+        }
+
+        let mut frame = Mat::default();
+
+        cam.read(&mut frame).map_err_to_generic_error()?;
+
+        let detect_rats = args.detect_rats.unwrap_or(true);
+
+        let mut boxes = Vec::new();
+
+        if detect_rats {
+            let mut converted = Mat::default();
+            let mut resized = Mat::default();
+            imgproc::resize_def(&frame, &mut resized, core::Size {
+                height: 640,
+                width: 640,
+            })
+            .map_err_to_generic_error()?;
+
+            imgproc::cvt_color_def(
+                &resized,
+                &mut converted,
+                imgproc::COLOR_BGR2RGB,
+            )
+            .map_err_to_generic_error()?;
+
+            if !frame.is_continuous() {
+                bail!("Frame is not continuous");
+            }
+
+            let mut mat = Mat::new_rows_cols_with_default(
+                640,
+                640,
+                core::CV_32FC3,
+                core::Scalar::all(0.0),
+            )
+            .map_err_to_generic_error()?;
+            converted
+                .convert_to(&mut mat, core::CV_32FC3, 1. / 255., 0.)
+                .map_err_to_generic_error()?;
+
+            let input = Array::<f32, Ix3>::try_from_cv(&mat)
+                .map_err(|e| GenericError::new(e.to_string()))?
+                .into_shape_with_order((640, 640, 3, 1))
+                .map_err_to_generic_error()?;
+
+            let input = input.permuted_axes((3, 2, 0, 1));
+
+            let input = input.view();
+
+            let result = self
+                .model
+                .run(
+                    ort::inputs!["images" => input]
+                        .map_err_to_generic_error()?,
                 )
                 .map_err_to_generic_error()?;
+
+            let output = result["output0"]
+                .try_extract_tensor::<f32>()
+                .map_err_to_generic_error()?;
+            let output = output.t();
+            let output = output.slice(s![.., .., 0]);
+
+            let min_confidence = args.min_confidence.unwrap_or(0.5);
+            for row in output.axis_iter(Axis(0)) {
+                let row = row.iter().copied().collect::<Vec<_>>();
+                let (class_id, prob) = row
+                    .iter()
+                    // skip bounding box coordinates
+                    .skip(4)
+                    .enumerate()
+                    .map(|(index, value)| (index, *value))
+                    .reduce(
+                        |accum, row| if row.1 > accum.1 { row } else { accum },
+                    )
+                    .ok_or_generic_error(
+                        "Could not find the class with the highest probability",
+                    )?;
+                if prob < min_confidence {
+                    continue;
+                }
+                let label = YOLOV11_CLASS_LABELS[class_id];
+                let label = label.to_string();
+
+                let w = row[2] / 640. * video_width;
+                let h = row[3] / 640. * video_height;
+
+                let x = (row[0] / 640. * video_width) - (w / 2.);
+                let y = (row[1] / 640. * video_height) - (h / 2.);
+                let bounding_box = BoundingBox {
+                    height: h as u64,
+                    width: w as u64,
+                    x: x as u64,
+                    y: y as u64,
+                };
+                let detection = Detection {
+                    bounding_box,
+                    label: label.to_string(),
+                    probability: prob,
+                };
+                boxes.push(detection);
+            }
+
+            for boxes in boxes.iter() {
+                let Detection {
+                    label,
+                    probability,
+                    bounding_box,
+                } = boxes;
+
+                let (x, y, w, h) = (
+                    bounding_box.x as i32,
+                    bounding_box.y as i32,
+                    bounding_box.width as i32,
+                    bounding_box.height as i32,
+                );
+
+                let rect = core::Rect {
+                    height: h,
+                    width: w,
+                    x,
+                    y,
+                };
+
+                imgproc::rectangle(
+                    &mut frame,
+                    rect,
+                    core::Scalar::new(255., 0., 0., 255.),
+                    2,
+                    imgproc::LINE_AA,
+                    0,
+                )
+                .map_err_to_generic_error()?;
+
+                let show_labels = args.show_labels.unwrap_or(true);
+
+                if show_labels {
+                    let show_confidence = args.show_confidence.unwrap_or(true);
+
+                    let label = if show_confidence {
+                        format!("{}: {}%", label, probability * 100.)
+                    } else {
+                        label.to_string()
+                    };
+                    imgproc::put_text(
+                        &mut frame,
+                        &label,
+                        core::Point { x, y },
+                        imgproc::FONT_HERSHEY_PLAIN,
+                        1.,
+                        core::Scalar::new(255., 0., 0., 255.),
+                        1,
+                        imgproc::LINE_AA,
+                        false,
+                    )
+                    .map_err_to_generic_error()?;
+                }
             }
         }
 

@@ -1,6 +1,5 @@
 using System.Text;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace RatDefender.AspNetCore.Results;
 
@@ -10,7 +9,7 @@ public class MotionJpegResult(IAsyncEnumerable<byte[]> stream) : IResult
 
     private const string ContentType = "multipart/x-mixed-replace;boundary=" + Boundary;
 
-    private static readonly byte[] NewLine = Encoding.UTF8.GetBytes("\r\n");
+    private static readonly byte[] NewLine = "\r\n"u8.ToArray();
 
     public async Task ExecuteAsync(HttpContext httpContext)
     {

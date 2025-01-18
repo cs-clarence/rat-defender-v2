@@ -2,19 +2,20 @@
     "name": "@repo/server",
     "version": "0.0.0-semantically-released",
     "scripts": {
-        "dev": "with-env -i 'dotnet watch run --project Server.csproj --no-launch-profile --no-hot-reload'",
+        "dev": "with-env -i 'dotnet watch run --runtime ${DOTNET_DEV_RID} --project Server.csproj --no-launch-profile --no-hot-reload'",
         "codegen:rat-defender-db-schema": "with-env -- 'dotnet-ef dbcontext script --project ../../../packages/cs/RatDefender.Infrastructure.Persistence --context RatDefenderDbContext --startup-project ./Server.csproj --output ../../../packages/atlas/database-migrations/src/schemas/0001_rat_defender.sql'",
         "strip-utf8-bom": "bunx strip-utf8-bom ../../../packages/atlas/database-migrations/src/schemas/",
         "codegen:db-schema": "bun run codegen:rat-defender-db-schema && bun run strip-utf8-bom",
         "cleanup": "rimraf ../../../packages/atlas/database-migrations/src/schemas/*.sql",
         "codegen": "bun run cleanup && bun run codegen:db-schema",
         "copy-files-to-output": "with-env -- 'cp ./rat-defender.db.sqlite ./appsettings.json ./bin/out/'",
-        "build": "with-env 'dotnet publish Server.csproj -c Release -o ./bin/out' && bun run copy-files-to-output",
+        "build": "with-env 'dotnet publish Server.csproj --runtime linux-arm64 -c Release -o ./bin/out' && bun run copy-files-to-output",
         "copy-out-to-server": "with-env -- 'sshpass -p \"$SERVER_PASSWORD\" -- scp -r ./bin/out/. $SERVER_USERNAME@$SERVER_HOST:$SERVER_COPY_PATH'"
     },
     "dependencies": {
         "@repo/rat-defender.infrastructure.object-detection": "workspace:*",
-        "@repo/rat-defender.infrastructure.object-detection.runtime.linux-x64": "workspace:*"
+        "@repo/rat-defender.infrastructure.object-detection.runtime.linux-x64": "workspace:*",
+        "@repo/rat-defender.infrastructure.object-detection.runtime.linux-arm64": "workspace:*"
     },
     "devDependencies": {
         "@repo/strip-utf8-bom": "workspace:*"

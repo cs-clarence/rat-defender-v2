@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>RatDefender.Infrastructure.ObjectDetection.runtime.linux_arm64</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="../../rs/rat-object-detection/build/aarch64-unknown-linux-gnu/release/*"
+              CopyToOutputDirectory="PreserveNewest"
+              PackagePath="runtimes/linux-arm64/native/"
+              Pack="true"
+        />
+    </ItemGroup>
+</Project>

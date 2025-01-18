@@ -5,11 +5,14 @@
         <RootNamespace>RatDefender.Infrastructure.ObjectDetection.runtime.linux_x64</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <Content Include="runtimes/**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        <None Include="../../rs/rat-object-detection/build/x86_64-unknown-linux-gnu/release/*"
+              CopyToOutputDirectory="PreserveNewest"
+              PackagePath="runtimes/linux-x64/native/"
+              Pack="true"
+        />
     </ItemGroup>
 </Project>

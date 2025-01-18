@@ -24,10 +24,12 @@ public class RatDetectionBackgroundService(
                 await RunAsync(stoppingToken);
             }
         }
+        catch (OperationCanceledException)
+        {
+            // expected
+        }
         catch (Exception e)
         {
-            if (e is OperationCanceledException) return;
-            
             logger.LogError(e,
                 "An error occurred while running RatDetectionBackgroundService");
             await Task.Delay(1000, stoppingToken);
@@ -52,7 +54,8 @@ public class RatDetectionBackgroundService(
 
             if (detectionCount > 0)
             {
-                await notifier.NotifyAsync(detectionCount, DateTimeOffset.UtcNow,
+                await notifier.NotifyAsync(detectionCount,
+                    DateTimeOffset.UtcNow,
                     stoppingToken);
             }
         }

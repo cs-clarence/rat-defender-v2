@@ -1,0 +1,11 @@
+{
+    "name": "@repo/rat-defender.infrastructure.object-detection.runtime.linux-arm64",
+    "version": "0.0.0-semantically-released",
+    "private": true,
+    "scripts": {
+        "build": "with-env -- 'echo \"No build\"'"
+    },
+    "devDependencies": {
+        "@repo/rat-object-detection": "workspace:*"
+    }
+}
