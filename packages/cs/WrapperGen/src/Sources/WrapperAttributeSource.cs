@@ -8,8 +8,8 @@ namespace WrapperGen.Sources;
 
 internal class WrapperAttributeSource : GenericWrapperAttributeSource
 {
-    public new const string Name = "WrapperAttribute";
-    public new const string Namespace = "WrapperGen";
+    public new const string Name = GenericWrapperAttributeSource.Name;
+    public new const string Namespace = GenericWrapperAttributeSource.Namespace;
     public new static readonly string FullName = $"{Namespace}.{Name}";
 
     public new static string GetSource()

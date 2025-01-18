@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.411.5" PrivateAssets="compile" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" PrivateAssets="compile" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0"  PrivateAssets="compile"/>
+    <PackageReference Include="AWSSDK.S3" Version="3.*" PrivateAssets="compile" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.*" PrivateAssets="compile" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.*"  PrivateAssets="compile"/>
   </ItemGroup>
   
 

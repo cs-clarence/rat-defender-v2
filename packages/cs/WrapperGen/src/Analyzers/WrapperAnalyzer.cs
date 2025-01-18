@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -81,19 +82,74 @@ public static class WrapperAnalyzer
         public bool ToValueConversion { get; set; } = true;
     };
 
+    private static string GetFullNamespace(INamedTypeSymbol? typeSymbol)
+    {
+        if (typeSymbol is null)
+        {
+            return "";
+        }
+
+        var typeInfo = typeSymbol.ContainingNamespace;
+        var ns = new List<string>();
+
+        while (typeInfo is not null)
+        {
+            if (typeInfo.IsGlobalNamespace)
+            {
+                break;
+            }
+            
+            ns.Add(typeInfo.Name);
+            typeInfo = typeInfo.ContainingNamespace;
+        }
+
+        ns.Reverse();
+
+        return string.Join(".", ns);
+    }
+
+
     private static AnalysisFlags GetAnalysisFlags(
         GeneratorAttributeSyntaxContext context)
     {
         var flags = new AnalysisFlags();
         var attribute = context.TargetSymbol
             .GetAttributes()
-            .First(data => data.AttributeClass is not null
-                           && data.AttributeClass.Name ==
-                           WrapperAttributeSource.Name
-                           && data.AttributeClass.ContainingNamespace
-                               .Name ==
-                           WrapperAttributeSource.Namespace);
+            .FirstOrDefault(data =>
+                data.AttributeClass is not null
+                && (data.AttributeClass.Name ==
+                    WrapperAttributeSource.Name
+                    || data.AttributeClass.Name ==
+                    GenericWrapperAttributeSource
+                        .GenericName
+                )
+                && GetFullNamespace(data.AttributeClass) ==
+                WrapperAttributeSource.Namespace
+            );
 
+
+        if (attribute is null)
+        {
+            var diagnostics = new Diagnostics();
+
+            diagnostics.Add(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "WRG0001",
+                    "WrapperGen",
+                    $"The {WrapperAttributeSource.Name} attribute is not found on the target",
+                    "WrapperGen",
+                    DiagnosticSeverity.Error,
+                    true
+                ),
+                GetLocation(context)
+            ));
+
+            throw new CompileError(
+                $"The {WrapperAttributeSource.FullName} attribute is not found on the target",
+                diagnostics
+            );
+        }
+        
         var attributeClass = attribute.AttributeClass;
 
         if (attributeClass is { IsGenericType: true, TypeArguments.Length: 1 })
@@ -346,7 +402,7 @@ public static class WrapperAnalyzer
         GeneratorAttributeSyntaxContext context)
     {
         var wrappedValueCount = 0;
-        
+
         var diagnostics = new Diagnostics();
 
 
@@ -368,24 +424,24 @@ public static class WrapperAnalyzer
                 ));
                 break;
             }
-            
         }
-        
-        
+
+
         foreach (var member in context.GetMembers())
         {
             if (member is not PropertyDeclarationSyntax
                 and not FieldDeclarationSyntax) continue;
-            
+
             var location = member switch
             {
-                PropertyDeclarationSyntax propertyNode => propertyNode.Identifier
+                PropertyDeclarationSyntax propertyNode => propertyNode
+                    .Identifier
                     .GetLocation(),
                 FieldDeclarationSyntax fieldNode => fieldNode.Declaration
                     .Variables.First().Identifier.GetLocation(),
                 _ => throw new Exception("Unknown member type")
             };
-            
+
             wrappedValueCount++;
 
             if (wrappedValueCount > 1)
@@ -403,10 +459,9 @@ public static class WrapperAnalyzer
                 ));
                 break;
             }
-            
         }
-        
-        
+
+
         if (diagnostics.List.Any())
         {
             throw new CompileError(
@@ -488,7 +543,7 @@ public static class WrapperAnalyzer
                 new DiagnosticDescriptor(
                     "WRG0000",
                     "WrapperGen",
-                    $"An error occurred while generating the wrapper: {e.Message}",
+                    $"An error occurred while generating the wrapper: {e.Message}, StackTrace: {e.StackTrace}",
                     "WrapperGen",
                     DiagnosticSeverity.Error,
                     true

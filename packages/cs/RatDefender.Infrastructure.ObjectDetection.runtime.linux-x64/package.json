@@ -1,0 +1,14 @@
+{
+    "name": "@repo/rat-defender.infrastructure.object-detection.runtime.linux-x64",
+    "version": "0.0.0-semantically-released",
+    "private": true,
+    "scripts": {
+        "mkdir-runtime": "mkdir -p ./runtimes/linux-x64/native",
+        "copy-files-to-runtime": "sh -c \"cp ../../rs/rat-object-detection/build/x86_64-unknown-linux-gnu/release/*.so ./runtimes/linux-x64/native\"",
+        "pre-build": "bun run mkdir-runtime && bun run copy-files-to-runtime",
+        "build": "with-env -- 'echo \"No build\"'"
+    },
+    "devDependencies": {
+        "@repo/rat-object-detection": "workspace:*"
+    }
+}

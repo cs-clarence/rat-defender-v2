@@ -1,0 +1,11 @@
+{
+    "name": "@repo/rat-defender.infrastructure.object-detection",
+    "version": "0.0.0-semantically-released",
+    "private": true,
+    "scripts": {
+        "codegen": "with-env -i 'uniffi-bindgen-cs --library ../../rs/rat-object-detection/build/x86_64-unknown-linux-gnu/release/librat_object_detection.so --out-dir ./src/Bindings'"
+    },
+    "devDependencies": {
+        "@repo/rat-object-detection": "workspace:*"
+    }
+}

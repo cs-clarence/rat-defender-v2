@@ -1,5 +1,5 @@
 ﻿using RatDefender.Domain.Entities.Abstractions;
-using WrapperGen;
+using WrapperGen.Abstractions;
 
 namespace RatDefender.Domain.Entities;
 

@@ -2,4 +2,4 @@ use rust_embed::Embed;
 
 #[derive(Embed)]
 #[folder = "./assets/"]
-pub struct Assets;
+pub(crate) struct Assets;

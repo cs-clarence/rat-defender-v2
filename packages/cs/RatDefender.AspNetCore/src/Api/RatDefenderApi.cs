@@ -3,6 +3,7 @@ using Common.AspNetCore.Responses;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using RatDefender.Application.Commands;
 using RatDefender.Application.Queries;
@@ -55,6 +56,9 @@ public static class RatDefenderApi
         
         routes.MapPost("/notifier/notify-detection", NotifyDetection)
             .WithName(nameof(NotifyDetection)).WithTags("Notifier");
+        
+        routes.MapGet("/images/current.jpeg", GetCurrentImage)
+            .WithName(nameof(GetCurrentImage)).WithTags("Images");
 
         return routes;
     }
@@ -162,5 +166,13 @@ public static class RatDefenderApi
         await mediator.Send(command);
 
         return Responses.Success();
+    }
+    
+    public static async Task<FileContentHttpResult> GetCurrentImage(
+        this IMediator mediator
+    )
+    {
+        var img = await mediator.Send(GetCurrentImageQuery.Instance);
+        return TypedResults.File(img.Buffer, "image/jpeg");
     }
 }

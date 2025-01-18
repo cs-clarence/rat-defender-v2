@@ -1,15 +1,10 @@
-use std::{
-    ops::Deref,
-    sync::{Arc, Mutex},
-    thread::available_parallelism,
-};
+use std::sync::{Arc, Mutex};
 
-use eyre::{Context, EyreContext, OptionExt as _, eyre};
 use ndarray::{Array, Axis, Ix3, s};
 use num_traits::Num;
 use opencv::{
-    core::{self, DataType, Mat, MatTraitConst as _},
-    imgproc,
+    core::{self, DataType, Mat, MatTraitConst as _, VectorToVec},
+    imgcodecs, imgproc,
     videoio::{
         self, VideoCapture, VideoCaptureTrait as _, VideoCaptureTraitConst as _,
     },
@@ -25,36 +20,32 @@ use crate::{
     detection::Detection,
     utilities::{
         conversions::n_dimentional_arrays::TryFromCv as _,
-        errors::{AnyError, OptionExt, ResultExt, bail},
+        errors::generic_error::{
+            GenericError, GenericResult, OptionExt as _, ResultExt as _, bail,
+        },
     },
 };
 
-#[derive(Debug, uniffi::Object)]
-pub struct RatDetector {
-    model: Session,
-    video_capture: Arc<Mutex<VideoCapture>>,
-}
-
 fn create_default_session_builder(
     options: &Option<SessionOptions>,
-) -> Result<SessionBuilder, AnyError> {
+) -> GenericResult<SessionBuilder> {
     let options = options.unwrap_or_default();
-    Ok(Session::builder()
-        .wrap_err("Could not create default session builder")?
+    Session::builder()
+        .map_err_to_generic_error()?
         .with_optimization_level(
             options
                 .optimization_level
                 .unwrap_or(SessionGraphOptimizationLevel::Level2)
                 .into(),
         )
-        .wrap_err("Could not create default session builder")?
+        .map_err_to_generic_error()?
         .with_intra_threads(
             options
                 .intra_threads
                 .map(|val| val as usize)
                 .unwrap_or_else(num_cpus::get_physical),
         )
-        .wrap_err("Could not create default session builder")?)
+        .map_err_to_generic_error()
 }
 
 #[derive(Debug, Clone, Copy, uniffi::Enum)]
@@ -95,212 +86,200 @@ pub struct SessionOptions {
     pub optimization_level: Option<SessionGraphOptimizationLevel>,
 }
 
+#[derive(Debug, Clone, Copy, uniffi::Enum)]
+pub enum FrameFormat {
+    Jpeg,
+    Png,
+}
+
 #[derive(Debug, uniffi::Record)]
 pub struct RunResult {
-    pub boxes: Vec<Detection>,
-    pub annotated_frame: Vec<u8>,
+    pub detections: Vec<Detection>,
     pub frame: Vec<u8>,
+    pub frame_format: FrameFormat,
 }
 
 #[derive(Debug, uniffi::Record, Default)]
 pub struct RunArgs {
     /// The minimum confidence for a detection to be considered a valid detection.
-    /// Defaults to 0.5.
-    #[uniffi(default = Some(0.5))]
     pub min_confidence: Option<f32>,
+    /// Whether to show labels on the detections.
+    pub show_labels: Option<bool>,
+    /// Whether to show confidence on the detections.
+    pub show_confidence: Option<bool>,
+}
+
+#[uniffi::export]
+pub fn new_rat_detector_from_files(
+    model_file: String,
+    video_capture_file: String,
+    options: Option<SessionOptions>,
+) -> GenericResult<Arc<RatDetector>> {
+    let model = create_default_session_builder(&options)?
+        .commit_from_file(model_file)
+        .map_err_to_generic_error()?;
+
+    let video_capture = Arc::new(Mutex::new(
+        VideoCapture::from_file(&video_capture_file, opencv::videoio::CAP_ANY)
+            .map_err_to_generic_error()?,
+    ));
+
+    Ok(Arc::new(RatDetector {
+        model,
+        video_capture,
+    }))
+}
+
+#[uniffi::export]
+pub fn new_rat_detector_from_model_bytes_and_video_capture_file(
+    model_bytes: Vec<u8>,
+    video_capture_file: String,
+    options: Option<SessionOptions>,
+) -> GenericResult<Arc<RatDetector>> {
+    let model = create_default_session_builder(&options)?
+        .commit_from_memory(&model_bytes)
+        .map_err_to_generic_error()?;
+
+    let video_capture = Arc::new(Mutex::new(
+        VideoCapture::from_file(&video_capture_file, opencv::videoio::CAP_ANY)
+            .map_err_to_generic_error()?,
+    ));
+
+    Ok(Arc::new(RatDetector {
+        model,
+        video_capture,
+    }))
+}
+
+#[uniffi::export]
+pub fn new_rat_detector_from_model_file_and_video_capture_index(
+    model_file: String,
+    video_capture_index: u32,
+    options: Option<SessionOptions>,
+) -> GenericResult<Arc<RatDetector>> {
+    let model = create_default_session_builder(&options)?
+        .commit_from_file(model_file)
+        .map_err_to_generic_error()?;
+
+    let video_capture = Arc::new(Mutex::new(
+        VideoCapture::new(video_capture_index as i32, opencv::videoio::CAP_ANY)
+            .map_err_to_generic_error()?,
+    ));
+
+    Ok(Arc::new(RatDetector {
+        model,
+        video_capture,
+    }))
+}
+
+#[uniffi::export]
+pub fn new_rat_detector_from_model_bytes_and_video_capture_index(
+    model_bytes: Vec<u8>,
+    video_capture_index: u32,
+    options: Option<SessionOptions>,
+) -> GenericResult<Arc<RatDetector>> {
+    let model = create_default_session_builder(&options)?
+        .commit_from_memory(&model_bytes)
+        .map_err_to_generic_error()?;
+
+    let video_capture = Arc::new(Mutex::new(
+        VideoCapture::new(video_capture_index as i32, opencv::videoio::CAP_ANY)
+            .map_err_to_generic_error()?,
+    ));
+
+    Ok(Arc::new(RatDetector {
+        model,
+        video_capture,
+    }))
+}
+
+#[uniffi::export]
+pub fn new_rat_detector_from_default_model_and_video_capture_index(
+    video_capture_index: u32,
+    options: Option<SessionOptions>,
+) -> GenericResult<Arc<RatDetector>> {
+    let model = create_default_session_builder(&options)?
+        .commit_from_memory(
+            &Assets::get("models/model.onnx")
+                .ok_or_generic_error("Could not find model")
+                .expect("Can't load default model")
+                .data,
+        )
+        .map_err_to_generic_error()?;
+
+    let video_capture = Arc::new(Mutex::new(
+        VideoCapture::new(video_capture_index as i32, opencv::videoio::CAP_ANY)
+            .map_err_to_generic_error()?,
+    ));
+
+    Ok(Arc::new(RatDetector {
+        model,
+        video_capture,
+    }))
+}
+
+#[uniffi::export]
+pub fn new_rat_detector_from_default_model_and_video_capture_file(
+    video_capture_file: String,
+    options: Option<SessionOptions>,
+) -> GenericResult<Arc<RatDetector>> {
+    let model = create_default_session_builder(&options)?
+        .commit_from_memory(
+            &Assets::get("models/model.onnx")
+                .ok_or_generic_error("Could not find model")
+                .expect("Can't load default model")
+                .data,
+        )
+        .map_err_to_generic_error()?;
+
+    let video_capture = Arc::new(Mutex::new(
+        VideoCapture::from_file(&video_capture_file, opencv::videoio::CAP_ANY)
+            .map_err_to_generic_error()?,
+    ));
+
+    Ok(Arc::new(RatDetector {
+        model,
+        video_capture,
+    }))
+}
+
+#[derive(Debug, uniffi::Object)]
+pub struct RatDetector {
+    pub(crate) model: Session,
+    pub(crate) video_capture: Arc<Mutex<VideoCapture>>,
 }
 
 #[uniffi::export]
 impl RatDetector {
-    #[inline(always)]
-    #[uniffi::constructor(default(options = None))]
-    pub fn new_from_files(
-        model_file: String,
-        video_capture_file: String,
-        options: Option<SessionOptions>,
-    ) -> Result<Self, AnyError> {
-        let model = create_default_session_builder(&options)?
-            .commit_from_file(model_file)
-            .map_err(|e| eyre::eyre!(e))?;
-
-        let video_capture = Arc::new(Mutex::new(
-            VideoCapture::from_file(
-                &video_capture_file,
-                opencv::videoio::CAP_ANY,
-            )
-            .wrap_err("Could not open video capture file")?,
-        ));
-
-        Ok(Self {
-            model,
-            video_capture,
-        })
-    }
-
-    #[inline(always)]
-    #[uniffi::constructor(default(options = None))]
-    pub fn new_from_model_bytes_and_video_capture_file(
-        model_bytes: Vec<u8>,
-        video_capture_file: String,
-        options: Option<SessionOptions>,
-    ) -> Result<Self, AnyError> {
-        let model = create_default_session_builder(&options)?
-            .commit_from_memory(&model_bytes)
-            .map_err(|e| eyre::eyre!(e))?;
-
-        let video_capture = Arc::new(Mutex::new(
-            VideoCapture::from_file(
-                &video_capture_file,
-                opencv::videoio::CAP_ANY,
-            )
-            .map_err(|e| eyre::eyre!(e))?,
-        ));
-
-        Ok(Self {
-            model,
-            video_capture,
-        })
-    }
-
-    #[inline(always)]
-    #[uniffi::constructor(default(options = None))]
-    pub fn new_from_model_file_and_video_capture_index(
-        model_file: String,
-        video_capture_index: u32,
-        options: Option<SessionOptions>,
-    ) -> Result<Self, AnyError> {
-        let model = create_default_session_builder(&options)?
-            .commit_from_file(model_file)
-            .map_err(|e| eyre::eyre!(e))?;
-
-        let video_capture = Arc::new(Mutex::new(
-            VideoCapture::new(
-                video_capture_index as i32,
-                opencv::videoio::CAP_ANY,
-            )
-            .map_err(|e| eyre::eyre!(e))?,
-        ));
-
-        Ok(Self {
-            model,
-            video_capture,
-        })
-    }
-
-    #[inline(always)]
-    #[uniffi::constructor(default(options = None))]
-    pub fn new_from_model_bytes_and_video_capture_index(
-        model_bytes: Vec<u8>,
-        video_capture_index: u32,
-        options: Option<SessionOptions>,
-    ) -> Result<Self, AnyError> {
-        let model = create_default_session_builder(&options)?
-            .commit_from_memory(&model_bytes)
-            .map_err(|e| eyre::eyre!(e))?;
-
-        let video_capture = Arc::new(Mutex::new(
-            VideoCapture::new(
-                video_capture_index as i32,
-                opencv::videoio::CAP_ANY,
-            )
-            .map_err(|e| eyre::eyre!(e))?,
-        ));
-
-        Ok(Self {
-            model,
-            video_capture,
-        })
-    }
-
-    #[inline(always)]
-    #[uniffi::constructor(default(options = None))]
-    pub fn new_default_model_and_video_capture_index(
-        video_capture_index: u32,
-        options: Option<SessionOptions>,
-    ) -> Result<Self, AnyError> {
-        let model = create_default_session_builder(&options)?
-            .commit_from_memory(
-                &Assets::get("models/model.onnx")
-                    .ok_or_any_error("Could not find model")?
-                    .data,
-            )
-            .map_err(|e| eyre::eyre!(e))?;
-
-        let video_capture = Arc::new(Mutex::new(
-            VideoCapture::new(
-                video_capture_index as i32,
-                opencv::videoio::CAP_ANY,
-            )
-            .map_err(|e| eyre::eyre!(e))?,
-        ));
-
-        Ok(Self {
-            model,
-            video_capture,
-        })
-    }
-
-    #[inline(always)]
-    #[uniffi::constructor(default(options = None))]
-    pub fn new_default_model_and_video_capture_file(
-        video_capture_file: String,
-        options: Option<SessionOptions>,
-    ) -> Result<Self, AnyError> {
-        let model = create_default_session_builder(&options)?
-            .commit_from_memory(
-                &Assets::get("models/model.onnx")
-                    .ok_or_any_error("Could not find model")?
-                    .data,
-            )
-            .map_err_to_any_error()?;
-
-        let video_capture = Arc::new(Mutex::new(
-            VideoCapture::from_file(
-                &video_capture_file,
-                opencv::videoio::CAP_ANY,
-            )
-            .map_err_to_any_error()?,
-        ));
-
-        Ok(Self {
-            model,
-            video_capture,
-        })
-    }
-
-    #[uniffi::method(default(args = None))]
-    pub fn run(
-        &self,
-        args: Option<RunArgs>,
-    ) -> Result<Vec<Detection>, AnyError> {
-        let mut cam = self.video_capture.lock().map_err_to_any_error()?;
+    pub fn run(&self, args: Option<RunArgs>) -> GenericResult<RunResult> {
+        let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
 
         let video_height = cam
             .get(videoio::CAP_PROP_FRAME_HEIGHT)
-            .map_err_to_any_error()? as f32;
+            .map_err_to_generic_error()? as f32;
         let video_width = cam
             .get(videoio::CAP_PROP_FRAME_WIDTH)
-            .map_err_to_any_error()? as f32;
+            .map_err_to_generic_error()? as f32;
 
         let mut frame = Mat::default();
         let mut converted = Mat::default();
         let mut resized = Mat::default();
         let mut boxes = Vec::new();
 
-        cam.read(&mut frame).map_err_to_any_error()?;
+        cam.read(&mut frame).map_err_to_generic_error()?;
 
         imgproc::resize_def(&frame, &mut resized, core::Size {
             height: 640,
             width: 640,
         })
-        .map_err_to_any_error()?;
+        .map_err_to_generic_error()?;
 
         imgproc::cvt_color_def(
             &resized,
             &mut converted,
             imgproc::COLOR_BGR2RGB,
         )
-        .map_err_to_any_error()?;
+        .map_err_to_generic_error()?;
 
         if !frame.is_continuous() {
             bail!("Frame is not continuous");
@@ -312,14 +291,15 @@ impl RatDetector {
             core::CV_32FC3,
             core::Scalar::all(0.0),
         )
-        .map_err_to_any_error()?;
+        .map_err_to_generic_error()?;
         converted
             .convert_to(&mut mat, core::CV_32FC3, 1. / 255., 0.)
-            .map_err_to_any_error()?;
+            .map_err_to_generic_error()?;
 
-        let input = Array::<f32, Ix3>::try_from_cv(&mat)?
+        let input = Array::<f32, Ix3>::try_from_cv(&mat)
+            .map_err(|e| GenericError::new(e.to_string()))?
             .into_shape_with_order((640, 640, 3, 1))
-            .map_err_to_any_error()?;
+            .map_err_to_generic_error()?;
 
         let input = input.permuted_axes((3, 2, 0, 1));
 
@@ -327,12 +307,12 @@ impl RatDetector {
 
         let result = self
             .model
-            .run(ort::inputs!["images" => input].map_err_to_any_error()?)
-            .map_err_to_any_error()?;
+            .run(ort::inputs!["images" => input].map_err_to_generic_error()?)
+            .map_err_to_generic_error()?;
 
         let output = result["output0"]
             .try_extract_tensor::<f32>()
-            .map_err_to_any_error()?;
+            .map_err_to_generic_error()?;
         let output = output.t();
         let output = output.slice(s![.., .., 0]);
 
@@ -347,23 +327,31 @@ impl RatDetector {
                 .enumerate()
                 .map(|(index, value)| (index, *value))
                 .reduce(|accum, row| if row.1 > accum.1 { row } else { accum })
-                .ok_or_any_error(
+                .ok_or_generic_error(
                     "Could not find the class with the highest probability",
                 )?;
             if prob < min_confidence {
                 continue;
             }
             let label = YOLOV11_CLASS_LABELS[class_id];
-            let label = format!("{}: {}%", label, prob * 100.);
+            let label = label.to_string();
 
             let w = row[2] / 640. * video_width;
             let h = row[3] / 640. * video_height;
 
             let x = (row[0] / 640. * video_width) - (w / 2.);
             let y = (row[1] / 640. * video_height) - (h / 2.);
-            let bounding_box =
-                BoundingBox::from_xywh(x as u64, y as u64, w as u64, h as u64);
-            let detection = Detection::new(label, prob, &bounding_box);
+            let bounding_box = BoundingBox {
+                height: h as u64,
+                width: w as u64,
+                x: x as u64,
+                y: y as u64,
+            };
+            let detection = Detection {
+                bounding_box,
+                label: label.to_string(),
+                probability: prob,
+            };
             boxes.push(detection);
         }
 
@@ -373,13 +361,12 @@ impl RatDetector {
                 probability,
                 bounding_box,
             } = boxes;
-            let label = format!("{}: {}%", label, probability * 100.);
 
             let (x, y, w, h) = (
-                bounding_box.x() as i32,
-                bounding_box.y() as i32,
-                bounding_box.width() as i32,
-                bounding_box.height() as i32,
+                bounding_box.x as i32,
+                bounding_box.y as i32,
+                bounding_box.width as i32,
+                bounding_box.height as i32,
             );
 
             let rect = core::Rect {
@@ -397,23 +384,42 @@ impl RatDetector {
                 imgproc::LINE_AA,
                 0,
             )
-            .map_err_to_any_error()?;
+            .map_err_to_generic_error()?;
 
-            imgproc::put_text(
-                &mut frame,
-                &label,
-                core::Point { x, y },
-                imgproc::FONT_HERSHEY_PLAIN,
-                1.,
-                core::Scalar::new(255., 0., 0., 255.),
-                1,
-                imgproc::LINE_AA,
-                false,
-            )
-            .map_err_to_any_error()?;
+            let show_labels = args.show_labels.unwrap_or(true);
+
+            if show_labels {
+                let show_confidence = args.show_confidence.unwrap_or(true);
+
+                let label = if show_confidence {
+                    format!("{}: {}%", label, probability * 100.)
+                } else {
+                    label.to_string()
+                };
+                imgproc::put_text(
+                    &mut frame,
+                    &label,
+                    core::Point { x, y },
+                    imgproc::FONT_HERSHEY_PLAIN,
+                    1.,
+                    core::Scalar::new(255., 0., 0., 255.),
+                    1,
+                    imgproc::LINE_AA,
+                    false,
+                )
+                .map_err_to_generic_error()?;
+            }
         }
 
-        Ok(boxes)
+        let mut buf = core::Vector::<u8>::new();
+        imgcodecs::imencode_def(".jpg", &frame, &mut buf)
+            .map_err_to_generic_error()?;
+
+        Ok(RunResult {
+            frame: buf.to_vec(),
+            detections: boxes,
+            frame_format: FrameFormat::Jpeg,
+        })
     }
 }
 

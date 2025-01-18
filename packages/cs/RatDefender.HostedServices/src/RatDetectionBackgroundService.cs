@@ -36,7 +36,7 @@ public class RatDetectionBackgroundService(
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
-        var detectionCount = 0ul;
+        ulong detectionCount;
         using (var scope = provider.CreateScope())
         {
             var detector = scope.ServiceProvider

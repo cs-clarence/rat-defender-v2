@@ -4,21 +4,24 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>RatDefender.Infrastructure.ImageRecognition</RootNamespace>
+        <RootNamespace>RatDefender.Infrastructure.ObjectDetection</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
 <!--        <PackageReference Include="Emgu.CV" Version="4.10.*"/>-->
 <!--        <PackageReference Include="Emgu.CV.runtime.debian-arm64" Version="4.10.*"/>-->
 <!--        <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.10.*"/>-->
-        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.*" PrivateAssets="compile"/>
-        <PackageReference Include="System.Numerics.Tensors" Version="9.0.0" PrivateAssets="compile"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" PrivateAssets="compile"/>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Configuration\Common.Configuration.csproj" PrivateAssets="compile" />
       <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" PrivateAssets="compile" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="src\Bindings\" />
     </ItemGroup>
 
     <!--    <Target Name="CopyModels" AfterTargets="Build">-->

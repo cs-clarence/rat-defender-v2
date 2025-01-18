@@ -10,3 +10,7 @@ codegen-backend = true
 
 [profile.dev]
 codegen-backend = "cranelift"
+
+[env]
+ORT_STRATEGY = { value = "system" }
+ORT_LIB_LOCATION = { value = "vendor/lib", relative = true }

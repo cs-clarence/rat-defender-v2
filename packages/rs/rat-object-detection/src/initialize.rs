@@ -3,10 +3,16 @@ use ort::execution_providers::{
     ROCmExecutionProvider,
 };
 
-use crate::utilities::errors::AnyError;
+use crate::utilities::errors::generic_error::{GenericResult, ResultExt as _};
+
+static mut INITIALIZED: bool = false;
 
 #[uniffi::export]
-pub fn initialize() -> Result<(), AnyError> {
+pub fn initialize() -> GenericResult<()> {
+    if unsafe { INITIALIZED } {
+        return Ok(());
+    }
+
     let mut providers = vec![CPUExecutionProvider::default().build()];
 
     if cfg!(feature = "onnx_cuda") {
@@ -24,7 +30,11 @@ pub fn initialize() -> Result<(), AnyError> {
     ort::init()
         .with_execution_providers(providers)
         .commit()
-        .map_err(|e| eyre::eyre!(e))?;
+        .map_err_to_generic_error()?;
+
+    unsafe {
+        INITIALIZED = true;
+    }
 
     Ok(())
 }

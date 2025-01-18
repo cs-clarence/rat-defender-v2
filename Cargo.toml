@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["packages/rs/*"]
+members = ["cli/rs/uniffi-bindgen", "packages/rs/*"]
 # default-members = ["services/rs/server"]
 
 [workspace.package]
@@ -43,7 +43,7 @@ tokio = { version = "1.42.0", features = [
 ] }
 rand = "0.8.5"
 num-traits = "0.2.19"
-uniffi = { version = "^0.28.3" }
+uniffi = { version = "=0.25.0" }
 itertools = { version = "^0.14.0" }
 rayon = { version = "1.10.0" }
 half = { version = "^2.4.1" }

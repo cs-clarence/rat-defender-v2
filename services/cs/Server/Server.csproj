@@ -21,5 +21,6 @@
         <ProjectReference Include="..\..\..\packages\cs\RatDefender.AspNetCore\RatDefender.AspNetCore.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\..\..\packages\cs\RatDefender.DependencyInjection\RatDefender.DependencyInjection.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\..\..\packages\cs\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64\RatDefender.Infrastructure.ObjectDetection.runtime.linux-x64.csproj" PrivateAssets="compile"/>
     </ItemGroup>
 </Project>

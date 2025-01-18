@@ -2,7 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using Common.Configuration.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace RatDefender.Infrastructure.ImageRecognition.Configurations;
+namespace RatDefender.Infrastructure.ObjectDetection.Configurations;
+
+public enum VideoCaptureSource
+{
+    DeviceIndex,
+    FilePath,
+}
 
 public class RatDetectionImageProcessorOptions
 {
@@ -10,7 +16,10 @@ public class RatDetectionImageProcessorOptions
         $"Slices:{typeof(RatDetectionImageProcessor).FullNameSection()!}";
     
     [Required]
-    public string OnnxModelPath { get; init; } = "assets/models/best.onnx";
+    public VideoCaptureSource VideoCaptureSource { get; init; } = VideoCaptureSource.DeviceIndex;
+    public uint? VideoCaptureIndex { get; init; }
+    public string? VideoCaptureFilePath { get; init; }
+    public string? OnnxModelPath { get; init; }
 }
 
 [OptionsValidator]

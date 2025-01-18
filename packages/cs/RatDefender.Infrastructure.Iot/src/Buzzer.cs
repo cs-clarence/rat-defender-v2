@@ -1,4 +1,3 @@
-using System.Device.Gpio.Drivers;
 using System.Device.Pwm;
 using Common.HostedServices.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -29,22 +28,14 @@ public class Buzzer : IBuzzer, IDisposable
         logger.LogInformation("{options}", options.Value);
     }
 
-    private async Task BuzzAsync(ushort tone, ushort duration, ulong delayMs,
+    private Task BuzzAsync(ushort tone, ushort duration, ulong delayMs,
         CancellationToken cancellationToken = default)
     {
-        if (delayMs > 100)
-        {
-            await _taskQueue.EnqueueAsync(async () =>
-            {
-                await Task.Delay((int)delayMs, cancellationToken);
-                _buzzer.PlayTone(tone, duration);
-            }, cancellationToken);
-        }
-        else
+        return _taskQueue.EnqueueAsync(async () =>
         {
             await Task.Delay((int)delayMs, cancellationToken);
             _buzzer.PlayTone(tone, duration);
-        }
+        }, cancellationToken);
     }
 
     public Task BuzzAsync(ushort tone, ushort duration,

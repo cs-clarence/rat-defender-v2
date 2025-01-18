@@ -1,14 +1,17 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "ui": "tui",
-    "envMode": "strict",
-    "globalEnv": ["LD_LIBRARY_PATH", "PATH", "DATABASE_URL", "MIGRATION_DEV_DATABASE_URL"],
+    "envMode": "loose",
+    "globalEnv": ["DATABASE_URL", "MIGRATION_DEV_DATABASE_URL", "BUILD_ARCH"],
     "tasks": {
         "check": {
             "dependsOn": ["^check"]
         },
+        "pre-build": {
+            "cache": true
+        },
         "build": {
-            "dependsOn": ["^build", "codegen"],
+            "dependsOn": ["pre-build", "^build", "codegen"],
             "inputs": ["./src/*"],
             "outputs": [
                 "./dist/*",
@@ -19,6 +22,7 @@
             ]
         },
         "codegen": {
+            "dependsOn": ["^build"],
             "inputs": ["./src/*"]
         },
         "cleanup": {},

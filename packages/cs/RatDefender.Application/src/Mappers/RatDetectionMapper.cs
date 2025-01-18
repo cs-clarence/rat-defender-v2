@@ -1,4 +1,3 @@
-using System.Security;
 using RatDefender.Application.Dtos;
 using RatDefender.Domain.Entities;
 using Riok.Mapperly.Abstractions;

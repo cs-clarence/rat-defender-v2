@@ -13,7 +13,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Common.Application\Common.Application.csproj" />
         <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" PrivateAssets="compile"/>
-        <ProjectReference Include="..\RatDefender.Infrastructure.ImageRecognition\RatDefender.Infrastructure.ImageRecognition.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\RatDefender.Infrastructure.ObjectDetection\RatDefender.Infrastructure.ObjectDetection.csproj" PrivateAssets="compile" />
     </ItemGroup>
 
 </Project>

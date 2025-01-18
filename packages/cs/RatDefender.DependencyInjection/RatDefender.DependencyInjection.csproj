@@ -10,14 +10,13 @@
         <ProjectReference Include="..\RatDefender.Application\RatDefender.Application.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\RatDefender.HostedServices\RatDefender.HostedServices.csproj" PrivateAssets="compile"/>
-        <ProjectReference Include="..\RatDefender.Infrastructure.ImageRecognition\RatDefender.Infrastructure.ImageRecognition.csproj" PrivateAssets="compile"/>
+        <ProjectReference Include="..\RatDefender.Infrastructure.ObjectDetection\RatDefender.Infrastructure.ObjectDetection.csproj" PrivateAssets="compile" />
         <ProjectReference Include="..\RatDefender.Infrastructure.Persistence\RatDefender.Infrastructure.Persistence.csproj" PrivateAssets="compile"/>
         <ProjectReference Include="..\RatDefender.Infrastructure.Iot\RatDefender.Infrastructure.Iot.csproj" />
     </ItemGroup>
 
     <ItemGroup>
 <!--        <PackageReference Include="Emgu.CV" Version="4.10.*" PrivateAssets="compile"/>-->
-        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.*" PrivateAssets="compile"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" PrivateAssets="compile"/>
     </ItemGroup>
 

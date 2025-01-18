@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using RatDefender.Domain.Services.Abstractions;
 
-namespace RatDefender.Infrastructure.ImageRecognition.Mocks;
+namespace RatDefender.Infrastructure.ObjectDetection.Mocks;
 
 public class MockRatDetectionImageProcessor(
     ILogger<RatDetectionImageProcessor> logger,

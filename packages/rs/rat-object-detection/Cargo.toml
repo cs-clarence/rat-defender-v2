@@ -38,7 +38,7 @@ itertools = { workspace = true }
 half = { workspace = true }
 num-traits = { workspace = true }
 tokio = { workspace = true }
-uniffi = { workspace = true }
+uniffi = { workspace = true, features = ["cli"] }
 num_cpus = { workspace = true }
 
 

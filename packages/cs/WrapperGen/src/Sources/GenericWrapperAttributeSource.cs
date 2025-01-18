@@ -9,10 +9,11 @@ namespace WrapperGen.Sources;
 internal class GenericWrapperAttributeSource
 {
     public const string Name = "WrapperAttribute";
+    public const string GenericName = $"{Name}`1";
 
-    public static readonly string Namespace = "WrapperGen";
+    public const string Namespace = "WrapperGen.Abstractions";
 
-    public static readonly string FullName = $"{Namespace}.{Name}`1";
+    public static readonly string FullName = $"{Namespace}.{GenericName}";
 
     public const string ValuePropertyName =
         nameof(ValuePropertyName);

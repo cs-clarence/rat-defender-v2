@@ -1,0 +1,5 @@
+[bindings.csharp]
+cdylib_name = "rat_object_detection"
+namespace = "RatDefender.Infrastructure.ObjectDetection.Bindings"
+access_modifier = "internal"
+global_methods_class_name = "Invoke"

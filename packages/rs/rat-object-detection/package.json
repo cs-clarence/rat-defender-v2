@@ -1,9 +1,19 @@
 {
     "name": "@repo/rat-object-detection",
+    "version": "0.0.0-semantically-released",
     "scripts": {
-        "cargo-build": "with-env -- 'cargo build --release --lib'",
-        "mkdir-build": "with-env -- 'mkdir -p ./build/release'",
-        "copy-target-output-to-project-dir": "with-env -- 'cp ../../../target/release/librat_object_detection.so ./build/release/'",
-        "build": "bun run cargo-build && bun run mkdir-build && bun run copy-target-output-to-project-dir"
+        "cargo-build-x86_64": "with-env -- 'cargo build --release --lib'",
+        "cargo-build-aarch64": "with-env -- 'cross build --release --lib --features onnx_rknpu' --target aarch64-unknown-linux-gnu",
+        "cargo-build-targets": "bun run cargo-build-x86_64 & bun run cargo-build-aarch64",
+        "copy-x86_64": "with-env -- 'sh -c \"cp ../../../target/release/*.so ./build/x86_64-unknown-linux-gnu/release/\"'",
+        "copy-aarch64": "with-env -- 'sh -c \"cp ../../../target/aarch64-unknown-linux-gnu/release/*.so ./build/aarch64-unknown-linux-gnu/release/\"'",
+        "copy-targets": "bun run copy-x86_64 && bun run copy-aarch64",
+        "mkdir-x86_64": "with-env -- 'mkdir -p ./build/x86_64-unknown-linux-gnu/release'",
+        "mkdir-aarch64": "with-env -- 'mkdir -p ./build/aarch64-unknown-linux-gnu/release'",
+        "mkdir-targets": "bun run mkdir-x86_64 && bun run mkdir-aarch64",
+        "build:x86_64": "bun run mkdir-x86_64 && bun run cargo-build-x86_64 && bun run copy-x86_64",
+        "build:aarch64": "bun run mkdir-aarch64 && bun run cargo-build-aarch64 && bun run copy-aarch64",
+        "build": "with-env -i 'bun run build:${BUILD_ARCH}'",
+        "check": "cargo check"
     }
 }

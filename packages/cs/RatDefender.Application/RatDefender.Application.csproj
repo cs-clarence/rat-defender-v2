@@ -7,11 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Riok.Mapperly" Version="4.1.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Application\Common.Application.csproj" />
+      <ProjectReference Include="..\Common.Application\Common.Application.csproj" PrivateAssets="compile"/>
       <ProjectReference Include="..\RatDefender.Domain\RatDefender.Domain.csproj" PrivateAssets="compile" />
     </ItemGroup>
 

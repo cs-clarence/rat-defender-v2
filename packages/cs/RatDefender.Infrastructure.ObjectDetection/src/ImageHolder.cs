@@ -1,12 +1,8 @@
-namespace RatDefender.Infrastructure.ImageRecognition;
+using RatDefender.Domain.Services.Abstractions;
 
-public class Image
-{
-    public required byte[] Buffer { get; set; }
-    public required string Format { get; set; }
-}
+namespace RatDefender.Infrastructure.ObjectDetection;
 
-public class ImageHolder
+public class ImageHolder : IImageRetriever
 {
     private readonly ReaderWriterLockSlim _bufferLock = new();
     private Image? _img;
@@ -40,5 +36,10 @@ public class ImageHolder
         {
             _bufferLock.ExitWriteLock();
         }
+    }
+
+    public Image? Get()
+    {
+        return GetImageBuffer();
     }
 }

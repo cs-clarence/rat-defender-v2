@@ -6,13 +6,13 @@ using RatDefender.Domain.Configurations;
 using RatDefender.Domain.Services;
 using RatDefender.Domain.Services.Abstractions;
 using RatDefender.HostedServices;
-using RatDefender.Infrastructure.ImageRecognition;
-using RatDefender.Infrastructure.ImageRecognition.Configurations;
-using RatDefender.Infrastructure.ImageRecognition.Mocks;
 using RatDefender.Infrastructure.Iot;
 using RatDefender.Infrastructure.Iot.Configurations;
 using RatDefender.Infrastructure.Iot.HttpClients;
 using RatDefender.Infrastructure.Iot.Mocks;
+using RatDefender.Infrastructure.ObjectDetection;
+using RatDefender.Infrastructure.ObjectDetection.Configurations;
+using RatDefender.Infrastructure.ObjectDetection.Mocks;
 using RatDefender.Infrastructure.Persistence.DbContexts;
 
 
@@ -77,6 +77,8 @@ public static class RatDefenderDependencyInjectionExtensions
     public static IServiceCollection AddRatDefenderInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
+        var imageHolder = new ImageHolder();
+        
         services.AddDbContextPool<RatDefenderDbContext>(
             o =>
             {
@@ -86,6 +88,10 @@ public static class RatDefenderDependencyInjectionExtensions
         services
             .AddSingleton<IValidateOptions<ThermalImagerOptions>,
                 ThermalImagerOptionsValidator>();
+
+        services
+            .AddSingleton<IValidateOptions<RatDetectionImageProcessorOptions>,
+                RatImageDetectionImageProcessorOptionsValidator>();
 
         services.AddOptions<ThermalImagerOptions>()
             .BindConfiguration(ThermalImagerOptions.DefaultKey)
@@ -109,8 +115,10 @@ public static class RatDefenderDependencyInjectionExtensions
         services.AddOptions<BuzzerOptions>()
             .BindConfiguration(BuzzerOptions.DefaultKey)
             .ValidateOnStart();
-        
-        services.AddSingleton<IValidateOptions<FoodDispenserOptions>, FoodDispenserOptionsValidator>();
+
+        services
+            .AddSingleton<IValidateOptions<FoodDispenserOptions>,
+                FoodDispenserOptionsValidator>();
         services.AddOptions<FoodDispenserOptions>()
             .BindConfiguration(FoodDispenserOptions.DefaultKey)
             .ValidateOnStart();
@@ -168,7 +176,8 @@ public static class RatDefenderDependencyInjectionExtensions
             services.AddSingleton<IDetectionNotifier, DetectionSmsNotifier>();
         }
 
-        services.AddSingleton<ImageHolder>();
+        services.AddSingleton(imageHolder);
+        services.AddSingleton<IImageRetriever>(imageHolder);
 
         return services;
     }
