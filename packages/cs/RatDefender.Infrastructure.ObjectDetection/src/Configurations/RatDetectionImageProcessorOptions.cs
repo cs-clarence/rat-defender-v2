@@ -11,6 +11,21 @@ public enum VideoCaptureSource
     FilePath,
 }
 
+public enum VideoCaptureApis
+{
+    Gstreamer,
+    V4l2,
+}
+
+
+public enum VideoCaptureModes
+{
+    Bgr,
+    Rgb,
+    Gray,
+    Yuyv,
+}
+
 public record RatDetectionImageProcessorOptions
 {
     public static readonly string DefaultKey =
@@ -28,8 +43,8 @@ public record RatDetectionImageProcessorOptions
     public uint? VideoCaptureWidth { get; init; }
     public uint? VideoCaptureHeight { get; init; }
     public ushort? VideoCaptureFps { get; init; }
-    public VideoCaptureApi? VideoCaptureApi { get; init; }
-    public VideoCaptureMode? VideoCaptureMode { get; init; }
+    public VideoCaptureApis? VideoCaptureApi { get; init; }
+    public VideoCaptureModes? VideoCaptureMode { get; init; }
     public bool DetectRats { get; init; } = true;
 }
 

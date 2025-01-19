@@ -24,6 +24,7 @@
       <Folder Include="src\Bindings\" />
     </ItemGroup>
 
+
     <!--    <Target Name="CopyModels" AfterTargets="Build">-->
     <!--        <Copy SourceFiles="$(MSBuildThisFileDirectory)/assets/models/best.onnx" DestinationFolder="$(Target)/models" />-->
     <!--    </Target>-->

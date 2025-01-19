@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 
 use ndarray::{Array, Axis, Ix3, s};
 use num_traits::Num;
@@ -393,6 +396,8 @@ pub struct RunResult {
     pub detections: Vec<Detection>,
     pub frame: Vec<u8>,
     pub frame_format: FrameFormat,
+    pub inference_time_ms: u64,
+    pub run_time_ms: u64,
 }
 
 #[derive(Debug, uniffi::Record, Default)]
@@ -496,6 +501,7 @@ impl RatDetector {
     }
 
     pub fn run(&self, args: Option<RunArgs>) -> GenericResult<RunResult> {
+        let start = Instant::now();
         let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
         let args = args.unwrap_or_default();
 
@@ -513,6 +519,8 @@ impl RatDetector {
         let detect_rats = args.detect_rats.unwrap_or(true);
 
         let mut boxes = Vec::new();
+
+        let mut inference_time_ms = 0u64;
 
         if detect_rats {
             let mut converted = Mat::default();
@@ -554,6 +562,7 @@ impl RatDetector {
 
             let input = input.view();
 
+            let start = Instant::now();
             let result = self
                 .model
                 .run(
@@ -561,6 +570,7 @@ impl RatDetector {
                         .map_err_to_generic_error()?,
                 )
                 .map_err_to_generic_error()?;
+            inference_time_ms = start.elapsed().as_millis() as u64;
 
             let output = result["output0"]
                 .try_extract_tensor::<f32>()
@@ -665,6 +675,8 @@ impl RatDetector {
             }
         }
 
+        let run_time_ms = start.elapsed().as_millis() as u64;
+
         let mut buf = core::Vector::<u8>::new();
         imgcodecs::imencode_def(".jpg", &frame, &mut buf)
             .map_err_to_generic_error()?;
@@ -673,6 +685,8 @@ impl RatDetector {
             frame: buf.to_vec(),
             detections: boxes,
             frame_format: FrameFormat::Jpeg,
+            inference_time_ms,
+            run_time_ms,
         })
     }
 }

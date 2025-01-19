@@ -25,10 +25,7 @@ ndarray = { version = "0.16.1", features = ["rayon"] }
 strum = { workspace = true }
 opencv = "0.94.1"
 ort = { version = "2.0.0-rc.9" }
-rust-embed = { version = "8.5.0", features = [
-    "compression",
-    "include-exclude",
-] }
+rust-embed = { workspace = true }
 thiserror = { workspace = true }
 eyre = { workspace = true }
 uniffi = { workspace = true, features = ["cli"] }

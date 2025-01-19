@@ -58,3 +58,7 @@ reqwest = { version = "^0.12.12", features = [
 tar = { version = "^0.4.38" }
 flate2 = { version = "^1.0.35" }
 bytes = { version = "^1.0.0" }
+rust-embed = { version = "8.5.0", features = [
+    "compression",
+    "include-exclude",
+] }

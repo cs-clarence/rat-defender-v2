@@ -2225,7 +2225,9 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
 internal record RunResult(
     List<Detection> @detections,
     byte[] @frame,
-    FrameFormat @frameFormat
+    FrameFormat @frameFormat,
+    ulong @inferenceTimeMs,
+    ulong @runTimeMs
 ) { }
 
 class FfiConverterTypeRunResult : FfiConverterRustBuffer<RunResult>
@@ -2240,7 +2242,9 @@ class FfiConverterTypeRunResult : FfiConverterRustBuffer<RunResult>
                 stream
             ),
             @frame: FfiConverterByteArray.INSTANCE.Read(stream),
-            @frameFormat: FfiConverterTypeFrameFormat.INSTANCE.Read(stream)
+            @frameFormat: FfiConverterTypeFrameFormat.INSTANCE.Read(stream),
+            @inferenceTimeMs: FfiConverterUInt64.INSTANCE.Read(stream),
+            @runTimeMs: FfiConverterUInt64.INSTANCE.Read(stream)
         );
     }
 
@@ -2253,7 +2257,9 @@ class FfiConverterTypeRunResult : FfiConverterRustBuffer<RunResult>
             + FfiConverterByteArray.INSTANCE.AllocationSize(value.@frame)
             + FfiConverterTypeFrameFormat.INSTANCE.AllocationSize(
                 value.@frameFormat
-            );
+            )
+            + FfiConverterUInt64.INSTANCE.AllocationSize(value.@inferenceTimeMs)
+            + FfiConverterUInt64.INSTANCE.AllocationSize(value.@runTimeMs);
     }
 
     public override void Write(RunResult value, BigEndianStream stream)
@@ -2264,6 +2270,8 @@ class FfiConverterTypeRunResult : FfiConverterRustBuffer<RunResult>
         );
         FfiConverterByteArray.INSTANCE.Write(value.@frame, stream);
         FfiConverterTypeFrameFormat.INSTANCE.Write(value.@frameFormat, stream);
+        FfiConverterUInt64.INSTANCE.Write(value.@inferenceTimeMs, stream);
+        FfiConverterUInt64.INSTANCE.Write(value.@runTimeMs, stream);
     }
 }
 

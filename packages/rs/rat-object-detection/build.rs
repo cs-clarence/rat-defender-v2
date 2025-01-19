@@ -65,17 +65,37 @@ async fn extract_so_files_to_dir(
 pub async fn main() -> eyre::Result<()> {
     println!("cargo:rerun-if-changed=build.rs");
 
-    if cfg!(feature = "onnx-acl") {
+    if cfg!(feature = "onnx-acl")
+        && cfg!(target_os = "linux")
+        && cfg!(target_arch = "aarch64")
+    {
+        // This is needed to put the build artifacts in the correct location
+        let out_dir = std::env::var("CARGO_TARGET_DIR");
+        if out_dir.is_err() {
+            return Ok(());
+        }
+        let out_dir = out_dir?;
+
+        // This is needed to put the build artifacts in the correct location
+        let target = std::env::var("TARGET");
+        if target.is_err() {
+            return Ok(());
+        }
+        let target = target?;
+
+        // This is needed to put the build artifacts in the correct location
+        let profile = std::env::var("PROFILE");
+        if profile.is_err() {
+            return Ok(());
+        }
+        let profile = profile?;
+
         let release = octocrab::instance()
             .repos("ARM-software", "ComputeLibrary")
             .releases()
             .get_latest()
             .await?;
 
-        let out_dir = std::env::var("CARGO_TARGET_DIR")?;
-
-        let target = std::env::var("TARGET")?;
-        let profile = std::env::var("PROFILE")?;
         let out_dir = PathBuf::from(out_dir).join(target).join(profile);
 
         std::fs::create_dir_all(&out_dir)?;

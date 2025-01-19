@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RatDefender.Domain.Configurations;
@@ -7,6 +6,44 @@ using RatDefender.Infrastructure.ObjectDetection.Configurations;
 using uniffi.rat_object_detection;
 
 namespace RatDefender.Infrastructure.ObjectDetection;
+
+internal static class InternalMappers
+{
+    public static VideoCaptureApi?
+        ToVideoCaptureApi(this VideoCaptureApis? value)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+        
+        return value.Value switch
+        {
+            VideoCaptureApis.Gstreamer => VideoCaptureApi.Gstreamer,
+            VideoCaptureApis.V4l2 => VideoCaptureApi.V4l2,
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+    }
+
+
+    public static VideoCaptureMode? ToVideoCaptureMode(this VideoCaptureModes? value)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+        
+        return value.Value switch
+        {
+            VideoCaptureModes.Bgr => VideoCaptureMode.Bgr,
+            VideoCaptureModes.Rgb => VideoCaptureMode.Rgb,
+            VideoCaptureModes.Gray => VideoCaptureMode.Gray,
+            VideoCaptureModes.Yuyv => VideoCaptureMode.Yuyv,
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        };
+        
+    }
+}
 
 public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
     IDisposable
@@ -39,10 +76,10 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
             opt.VideoCaptureWidth,
             opt.VideoCaptureHeight,
             opt.VideoCaptureFps,
-            opt.VideoCaptureApi,
-            opt.VideoCaptureMode
+            opt.VideoCaptureApi.ToVideoCaptureApi(),
+            opt.VideoCaptureMode.ToVideoCaptureMode()
         );
-        
+
         var ctorOptions = new CtorOptions(null, captureOptions);
 
         if (opt.VideoCaptureSource == VideoCaptureSource.DeviceIndex)
@@ -60,7 +97,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 _detector = RatObjectDetectionMethods
                     .NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
                         opt.VideoCaptureIndex ?? 0,
-                       ctorOptions
+                        ctorOptions
                     );
             }
         }
@@ -72,7 +109,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 _detector = RatObjectDetectionMethods.NewRatDetectorFromFiles(
                     modelSource,
                     opt.VideoCaptureFilePath ?? "",
-                        ctorOptions
+                    ctorOptions
                 );
             }
             else
@@ -116,6 +153,8 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
         var buffer = result.frame;
         var format = result.frameFormat.ToString();
         _holder.SetImageBuffer(buffer, format);
+        _logger.LogDebug("Processing Time = Run: {}ms, Inference: {}ms",
+            result.runTimeMs, result.inferenceTimeMs);
 
         return Task.FromResult(new ProcessResult(detections.ToList()));
     }
