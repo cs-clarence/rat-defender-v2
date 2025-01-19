@@ -80,26 +80,131 @@ impl From<SessionGraphOptimizationLevel> for GraphOptimizationLevel {
     }
 }
 
+#[derive(Debug, Clone, Copy, uniffi::Enum, strum::FromRepr)]
+#[repr(u64)]
+pub enum VideoCaptureApi {
+    Any = 0,
+    // Vfw = 200,
+    // V4l = 200,
+    V4l2 = 200,
+    Firewire = 300,
+    // Fireware = 300,
+    // Iee1394 = 300,
+    // Dc1394 = 300,
+    // Cmu1394 = 300,
+    Qt = 500,
+    Unicap = 600,
+    Dshow = 700,
+    Pvapi = 800,
+    Openni = 900,
+    OpenniAsus = 910,
+    Android = 1000,
+    Xiapi = 1100,
+    Avfoundation = 1200,
+    Giaganetix = 1300,
+    Msmf = 1400,
+    Winrt = 1410,
+    Intelperc = 1500,
+    Openni2 = 1600,
+    Openni2Asus = 1610,
+    Gphoto2 = 1700,
+    Gstreamer = 1800,
+    Ffmpeg = 1900,
+    Images = 2000,
+    Aravis = 2100,
+    OpencvMjpeg = 2200,
+    IntelMfx = 2300,
+    Xine = 2400,
+}
+
+#[derive(Debug, Clone, Copy, uniffi::Enum, strum::FromRepr)]
+#[repr(u8)]
+pub enum VideoCaptureMode {
+    Bgr = 0,
+    Rgb = 1,
+    Gray = 2,
+    Yuyv = 3,
+}
+
 #[derive(Debug, Clone, Copy, uniffi::Record, Default)]
 pub struct SessionOptions {
     pub intra_threads: Option<u8>,
     pub optimization_level: Option<SessionGraphOptimizationLevel>,
 }
 
+#[derive(Debug, Clone, Copy, uniffi::Record, Default)]
+pub struct CaptureOptions {
+    pub frame_height: Option<u32>,
+    pub frame_width: Option<u32>,
+    pub fps: Option<u32>,
+    pub backend: Option<VideoCaptureApi>,
+    pub mode: Option<VideoCaptureMode>,
+}
+
+#[derive(Debug, Clone, Copy, uniffi::Record, Default)]
+pub struct CtorOptions {
+    pub session: Option<SessionOptions>,
+    pub capture: Option<CaptureOptions>,
+}
+
+fn apply_capture_options(
+    options: &Option<CaptureOptions>,
+    cam: &mut VideoCapture,
+) -> GenericResult<()> {
+    let options = options.unwrap_or_default();
+
+    let mode = options.mode;
+
+    if let Some(mode) = mode {
+        cam.set(videoio::CAP_PROP_MODE, mode as u8 as f64)
+            .map_err_to_generic_error()?;
+    }
+
+    let frame_height = options.frame_height;
+    if let Some(frame_height) = frame_height {
+        cam.set(videoio::CAP_PROP_FRAME_HEIGHT, frame_height as f64)
+            .map_err_to_generic_error()?;
+    }
+    let frame_width = options.frame_width;
+    if let Some(frame_width) = frame_width {
+        cam.set(videoio::CAP_PROP_FRAME_WIDTH, frame_width as f64)
+            .map_err_to_generic_error()?;
+    }
+    let fps = options.fps;
+    if let Some(fps) = fps {
+        cam.set(videoio::CAP_PROP_FPS, fps as f64)
+            .map_err_to_generic_error()?;
+    }
+
+    Ok(())
+}
+
 #[uniffi::export]
 pub fn new_rat_detector_from_files(
     model_file: String,
     video_capture_file: String,
-    options: Option<SessionOptions>,
+    options: Option<CtorOptions>,
 ) -> GenericResult<Arc<RatDetector>> {
-    let model = create_default_session_builder(&options)?
+    let options = options.unwrap_or_default();
+    let model = create_default_session_builder(&options.session)?
         .commit_from_file(model_file)
         .map_err_to_generic_error()?;
 
+    let cap_api = options
+        .capture
+        .unwrap_or_default()
+        .backend
+        .unwrap_or(VideoCaptureApi::Any) as i32;
+
     let video_capture = Arc::new(Mutex::new(
-        VideoCapture::from_file(&video_capture_file, opencv::videoio::CAP_ANY)
+        VideoCapture::from_file(&video_capture_file, cap_api)
             .map_err_to_generic_error()?,
     ));
+
+    apply_capture_options(
+        &options.capture,
+        &mut *video_capture.lock().map_err_to_generic_error()?,
+    )?;
 
     Ok(Arc::new(RatDetector {
         model,
@@ -111,16 +216,26 @@ pub fn new_rat_detector_from_files(
 pub fn new_rat_detector_from_model_bytes_and_video_capture_file(
     model_bytes: Vec<u8>,
     video_capture_file: String,
-    options: Option<SessionOptions>,
+    options: Option<CtorOptions>,
 ) -> GenericResult<Arc<RatDetector>> {
-    let model = create_default_session_builder(&options)?
+    let options = options.unwrap_or_default();
+    let model = create_default_session_builder(&options.session)?
         .commit_from_memory(&model_bytes)
         .map_err_to_generic_error()?;
 
+    let cap_api = options
+        .capture
+        .unwrap_or_default()
+        .backend
+        .unwrap_or(VideoCaptureApi::Any) as i32;
     let video_capture = Arc::new(Mutex::new(
-        VideoCapture::from_file(&video_capture_file, opencv::videoio::CAP_ANY)
+        VideoCapture::from_file(&video_capture_file, cap_api)
             .map_err_to_generic_error()?,
     ));
+    apply_capture_options(
+        &options.capture,
+        &mut *video_capture.lock().map_err_to_generic_error()?,
+    )?;
 
     Ok(Arc::new(RatDetector {
         model,
@@ -132,16 +247,27 @@ pub fn new_rat_detector_from_model_bytes_and_video_capture_file(
 pub fn new_rat_detector_from_model_file_and_video_capture_index(
     model_file: String,
     video_capture_index: u32,
-    options: Option<SessionOptions>,
+    options: Option<CtorOptions>,
 ) -> GenericResult<Arc<RatDetector>> {
-    let model = create_default_session_builder(&options)?
+    let options = options.unwrap_or_default();
+    let model = create_default_session_builder(&options.session)?
         .commit_from_file(model_file)
         .map_err_to_generic_error()?;
 
+    let cap_api = options
+        .capture
+        .unwrap_or_default()
+        .backend
+        .unwrap_or(VideoCaptureApi::Any) as i32;
+
     let video_capture = Arc::new(Mutex::new(
-        VideoCapture::new(video_capture_index as i32, opencv::videoio::CAP_ANY)
+        VideoCapture::new(video_capture_index as i32, cap_api)
             .map_err_to_generic_error()?,
     ));
+    apply_capture_options(
+        &options.capture,
+        &mut *video_capture.lock().map_err_to_generic_error()?,
+    )?;
 
     Ok(Arc::new(RatDetector {
         model,
@@ -153,16 +279,26 @@ pub fn new_rat_detector_from_model_file_and_video_capture_index(
 pub fn new_rat_detector_from_model_bytes_and_video_capture_index(
     model_bytes: Vec<u8>,
     video_capture_index: u32,
-    options: Option<SessionOptions>,
+    options: Option<CtorOptions>,
 ) -> GenericResult<Arc<RatDetector>> {
-    let model = create_default_session_builder(&options)?
+    let options = options.unwrap_or_default();
+    let model = create_default_session_builder(&options.session)?
         .commit_from_memory(&model_bytes)
         .map_err_to_generic_error()?;
 
+    let cap_api = options
+        .capture
+        .unwrap_or_default()
+        .backend
+        .unwrap_or(VideoCaptureApi::Any) as i32;
     let video_capture = Arc::new(Mutex::new(
-        VideoCapture::new(video_capture_index as i32, opencv::videoio::CAP_ANY)
+        VideoCapture::new(video_capture_index as i32, cap_api)
             .map_err_to_generic_error()?,
     ));
+    apply_capture_options(
+        &options.capture,
+        &mut *video_capture.lock().map_err_to_generic_error()?,
+    )?;
 
     Ok(Arc::new(RatDetector {
         model,
@@ -173,9 +309,10 @@ pub fn new_rat_detector_from_model_bytes_and_video_capture_index(
 #[uniffi::export]
 pub fn new_rat_detector_from_default_model_and_video_capture_index(
     video_capture_index: u32,
-    options: Option<SessionOptions>,
+    options: Option<CtorOptions>,
 ) -> GenericResult<Arc<RatDetector>> {
-    let model = create_default_session_builder(&options)?
+    let options = options.unwrap_or_default();
+    let model = create_default_session_builder(&options.session)?
         .commit_from_memory(
             &Assets::get("models/model.onnx")
                 .ok_or_generic_error("Could not find model")
@@ -184,10 +321,19 @@ pub fn new_rat_detector_from_default_model_and_video_capture_index(
         )
         .map_err_to_generic_error()?;
 
+    let cap_api = options
+        .capture
+        .unwrap_or_default()
+        .backend
+        .unwrap_or(VideoCaptureApi::Any) as i32;
     let video_capture = Arc::new(Mutex::new(
-        VideoCapture::new(video_capture_index as i32, opencv::videoio::CAP_ANY)
+        VideoCapture::new(video_capture_index as i32, cap_api)
             .map_err_to_generic_error()?,
     ));
+    apply_capture_options(
+        &options.capture,
+        &mut *video_capture.lock().map_err_to_generic_error()?,
+    )?;
 
     Ok(Arc::new(RatDetector {
         model,
@@ -198,9 +344,10 @@ pub fn new_rat_detector_from_default_model_and_video_capture_index(
 #[uniffi::export]
 pub fn new_rat_detector_from_default_model_and_video_capture_file(
     video_capture_file: String,
-    options: Option<SessionOptions>,
+    options: Option<CtorOptions>,
 ) -> GenericResult<Arc<RatDetector>> {
-    let model = create_default_session_builder(&options)?
+    let options = options.unwrap_or_default();
+    let model = create_default_session_builder(&options.session)?
         .commit_from_memory(
             &Assets::get("models/model.onnx")
                 .ok_or_generic_error("Could not find model")
@@ -209,10 +356,19 @@ pub fn new_rat_detector_from_default_model_and_video_capture_file(
         )
         .map_err_to_generic_error()?;
 
+    let cap_api = options
+        .capture
+        .unwrap_or_default()
+        .backend
+        .unwrap_or(VideoCaptureApi::Any) as i32;
     let video_capture = Arc::new(Mutex::new(
-        VideoCapture::from_file(&video_capture_file, opencv::videoio::CAP_ANY)
+        VideoCapture::from_file(&video_capture_file, cap_api)
             .map_err_to_generic_error()?,
     ));
+    apply_capture_options(
+        &options.capture,
+        &mut *video_capture.lock().map_err_to_generic_error()?,
+    )?;
 
     Ok(Arc::new(RatDetector {
         model,
@@ -239,23 +395,6 @@ pub struct RunResult {
     pub frame_format: FrameFormat,
 }
 
-#[derive(Debug, Clone, Copy, uniffi::Record)]
-pub struct CameraResolution {
-    pub width: u32,
-    pub height: u32,
-    pub fps: u32,
-}
-
-impl Default for CameraResolution {
-    fn default() -> Self {
-        Self {
-            width: 640,
-            height: 480,
-            fps: 30,
-        }
-    }
-}
-
 #[derive(Debug, uniffi::Record, Default)]
 pub struct RunArgs {
     /// The minimum confidence for a detection to be considered a valid detection.
@@ -264,51 +403,108 @@ pub struct RunArgs {
     pub show_labels: Option<bool>,
     /// Whether to show confidence on the detections.
     pub show_confidence: Option<bool>,
-    pub camera_resolution: Option<CameraResolution>,
     pub detect_rats: Option<bool>,
 }
 
 #[uniffi::export]
 impl RatDetector {
+    pub fn set_capture_frame_size(
+        &self,
+        frame_height: u32,
+        frame_width: u32,
+    ) -> GenericResult<()> {
+        self.set_capture_frame_height(frame_height)?;
+        self.set_capture_frame_width(frame_width)?;
+
+        Ok(())
+    }
+
+    pub fn set_capture_frame_height(
+        &self,
+        frame_height: u32,
+    ) -> GenericResult<()> {
+        let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
+        cam.set(videoio::CAP_PROP_FRAME_HEIGHT, frame_height as f64)
+            .map_err_to_generic_error()?;
+
+        Ok(())
+    }
+
+    pub fn get_capture_frame_height(&self) -> GenericResult<u32> {
+        let cam = self.video_capture.lock().map_err_to_generic_error()?;
+        Ok(cam
+            .get(videoio::CAP_PROP_FRAME_HEIGHT)
+            .map_err_to_generic_error()? as u32)
+    }
+
+    pub fn set_capture_frame_width(
+        &self,
+        frame_width: u32,
+    ) -> GenericResult<()> {
+        let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
+        cam.set(videoio::CAP_PROP_FRAME_WIDTH, frame_width as f64)
+            .map_err_to_generic_error()?;
+
+        Ok(())
+    }
+
+    pub fn get_capture_frame_width(&self) -> GenericResult<u32> {
+        let cam = self.video_capture.lock().map_err_to_generic_error()?;
+        Ok(cam
+            .get(videoio::CAP_PROP_FRAME_WIDTH)
+            .map_err_to_generic_error()? as u32)
+    }
+
+    pub fn get_capture_backend(&self) -> GenericResult<VideoCaptureApi> {
+        let cam = self.video_capture.lock().map_err_to_generic_error()?;
+        let backend = cam
+            .get(videoio::CAP_PROP_BACKEND)
+            .map_err_to_generic_error()?;
+        VideoCaptureApi::from_repr(backend as u64)
+            .ok_or_generic_error("Could not parse backend")
+    }
+
+    pub fn set_capture_fps(&self, fps: u32) -> GenericResult<()> {
+        let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
+        cam.set(videoio::CAP_PROP_FPS, fps as f64)
+            .map_err_to_generic_error()?;
+
+        Ok(())
+    }
+
+    pub fn get_capture_fps(&self) -> GenericResult<u32> {
+        let cam = self.video_capture.lock().map_err_to_generic_error()?;
+        Ok(cam.get(videoio::CAP_PROP_FPS).map_err_to_generic_error()? as u32)
+    }
+
+    pub fn set_capture_mode(
+        &self,
+        mode: VideoCaptureMode,
+    ) -> GenericResult<()> {
+        let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
+        cam.set(videoio::CAP_PROP_MODE, mode as u8 as f64)
+            .map_err_to_generic_error()?;
+        Ok(())
+    }
+
+    pub fn get_capture_mode(&self) -> GenericResult<VideoCaptureMode> {
+        let cam = self.video_capture.lock().map_err_to_generic_error()?;
+        let mode =
+            cam.get(videoio::CAP_PROP_MODE).map_err_to_generic_error()?;
+        VideoCaptureMode::from_repr(mode as u8)
+            .ok_or_generic_error("Could not parse mode")
+    }
+
     pub fn run(&self, args: Option<RunArgs>) -> GenericResult<RunResult> {
         let mut cam = self.video_capture.lock().map_err_to_generic_error()?;
         let args = args.unwrap_or_default();
 
-        let camera_resolution = args.camera_resolution.unwrap_or_default();
-
-        let mut video_height = cam
+        let video_height = cam
             .get(videoio::CAP_PROP_FRAME_HEIGHT)
             .map_err_to_generic_error()? as f32;
-        let mut video_width = cam
+        let video_width = cam
             .get(videoio::CAP_PROP_FRAME_WIDTH)
             .map_err_to_generic_error()? as f32;
-        let video_fps =
-            cam.get(videoio::CAP_PROP_FPS).map_err_to_generic_error()? as f32;
-
-        if video_height != camera_resolution.height as f32 {
-            cam.set(
-                videoio::CAP_PROP_FRAME_HEIGHT,
-                camera_resolution.height as f64,
-            )
-            .map_err_to_generic_error()?;
-
-            video_height = camera_resolution.height as f32;
-        }
-
-        if video_width != camera_resolution.width as f32 {
-            cam.set(
-                videoio::CAP_PROP_FRAME_WIDTH,
-                camera_resolution.width as f64,
-            )
-            .map_err_to_generic_error()?;
-
-            video_width = camera_resolution.width as f32;
-        }
-
-        if video_fps != camera_resolution.fps as f32 {
-            cam.set(videoio::CAP_PROP_FPS, camera_resolution.fps as f64)
-                .map_err_to_generic_error()?;
-        }
 
         let mut frame = Mat::default();
 

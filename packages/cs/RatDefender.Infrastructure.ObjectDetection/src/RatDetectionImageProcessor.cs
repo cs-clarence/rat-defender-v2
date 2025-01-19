@@ -35,6 +35,16 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
 
         var modelSource = opt.OnnxModelPath;
 
+        var captureOptions = new CaptureOptions(
+            opt.VideoCaptureWidth,
+            opt.VideoCaptureHeight,
+            opt.VideoCaptureFps,
+            opt.VideoCaptureApi,
+            opt.VideoCaptureMode
+        );
+        
+        var ctorOptions = new CtorOptions(null, captureOptions);
+
         if (opt.VideoCaptureSource == VideoCaptureSource.DeviceIndex)
         {
             if (modelSource is not null)
@@ -42,7 +52,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 _detector = RatObjectDetectionMethods
                     .NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
                         opt.VideoCaptureIndex ?? 0,
-                        null
+                        ctorOptions
                     );
             }
             else
@@ -50,7 +60,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 _detector = RatObjectDetectionMethods
                     .NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
                         opt.VideoCaptureIndex ?? 0,
-                        null
+                       ctorOptions
                     );
             }
         }
@@ -62,7 +72,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 _detector = RatObjectDetectionMethods.NewRatDetectorFromFiles(
                     modelSource,
                     opt.VideoCaptureFilePath ?? "",
-                    null
+                        ctorOptions
                 );
             }
             else
@@ -70,7 +80,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 _detector = RatObjectDetectionMethods
                     .NewRatDetectorFromDefaultModelAndVideoCaptureFile(
                         opt.VideoCaptureFilePath ?? "",
-                        null
+                        ctorOptions
                     );
             }
         }
@@ -91,8 +101,6 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
                 infer.MinimumConfidence,
                 opt.ShowLabel,
                 opt.ShowConfidence,
-                new CameraResolution(opt.VideoCaptureWidth,
-                    opt.VideoCaptureHeight, opt.VideoCaptureFps),
                 opt.DetectRats
             ));
         var detections = result.detections.Select(i => new DetectionBoundingBox

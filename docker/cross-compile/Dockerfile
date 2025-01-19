@@ -12,8 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN mkdir -p /usr/local/src/scripts
 COPY ./docker/cross-compile/scripts /usr/local/src/scripts/
 
-RUN ARCH=${ARCH} BASE_IMAGE=${BASE_IMAGE} /usr/local/src/scripts/install-tools.sh
-RUN ARCH=${ARCH} BASE_IMAGE=${BASE_IMAGE} /usr/local/src/scripts/install-opencv.sh
+RUN ARCH=${ARCH} BASE_IMAGE=${BASE_IMAGE} /usr/local/src/scripts/install.sh
 
 FROM base AS base-arm-common
 

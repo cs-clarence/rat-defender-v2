@@ -638,9 +638,75 @@ static class _UniFFILib
     );
 
     [DllImport("rat_object_detection")]
+    public static extern RustBuffer uniffi_rat_object_detection_fn_method_ratdetector_get_capture_backend(
+        IntPtr @ptr,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern uint uniffi_rat_object_detection_fn_method_ratdetector_get_capture_fps(
+        IntPtr @ptr,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern uint uniffi_rat_object_detection_fn_method_ratdetector_get_capture_frame_height(
+        IntPtr @ptr,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern uint uniffi_rat_object_detection_fn_method_ratdetector_get_capture_frame_width(
+        IntPtr @ptr,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern RustBuffer uniffi_rat_object_detection_fn_method_ratdetector_get_capture_mode(
+        IntPtr @ptr,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
     public static extern RustBuffer uniffi_rat_object_detection_fn_method_ratdetector_run(
         IntPtr @ptr,
         RustBuffer @args,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern void uniffi_rat_object_detection_fn_method_ratdetector_set_capture_fps(
+        IntPtr @ptr,
+        uint @fps,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern void uniffi_rat_object_detection_fn_method_ratdetector_set_capture_frame_height(
+        IntPtr @ptr,
+        uint @frameHeight,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern void uniffi_rat_object_detection_fn_method_ratdetector_set_capture_frame_size(
+        IntPtr @ptr,
+        uint @frameHeight,
+        uint @frameWidth,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern void uniffi_rat_object_detection_fn_method_ratdetector_set_capture_frame_width(
+        IntPtr @ptr,
+        uint @frameWidth,
+        ref RustCallStatus _uniffi_out_err
+    );
+
+    [DllImport("rat_object_detection")]
+    public static extern void uniffi_rat_object_detection_fn_method_ratdetector_set_capture_mode(
+        IntPtr @ptr,
+        RustBuffer @mode,
         ref RustCallStatus _uniffi_out_err
     );
 
@@ -1033,7 +1099,37 @@ static class _UniFFILib
     public static extern ushort uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_file_and_video_capture_index();
 
     [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_backend();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_fps();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_frame_height();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_frame_width();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_mode();
+
+    [DllImport("rat_object_detection")]
     public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_run();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_fps();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_height();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_size();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_width();
+
+    [DllImport("rat_object_detection")]
+    public static extern ushort uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_mode();
 
     [DllImport("rat_object_detection")]
     public static extern uint ffi_rat_object_detection_uniffi_contract_version();
@@ -1065,60 +1161,110 @@ static class _UniFFILib
         {
             var checksum =
                 _UniFFILib.uniffi_rat_object_detection_checksum_func_new_rat_detector_from_default_model_and_video_capture_file();
-            if (checksum != 12110)
+            if (checksum != 7446)
             {
                 throw new UniffiContractChecksumException(
-                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_default_model_and_video_capture_file` checksum `12110`, library returned `{checksum}`"
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_default_model_and_video_capture_file` checksum `7446`, library returned `{checksum}`"
                 );
             }
         }
         {
             var checksum =
                 _UniFFILib.uniffi_rat_object_detection_checksum_func_new_rat_detector_from_default_model_and_video_capture_index();
-            if (checksum != 45617)
+            if (checksum != 33297)
             {
                 throw new UniffiContractChecksumException(
-                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_default_model_and_video_capture_index` checksum `45617`, library returned `{checksum}`"
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_default_model_and_video_capture_index` checksum `33297`, library returned `{checksum}`"
                 );
             }
         }
         {
             var checksum =
                 _UniFFILib.uniffi_rat_object_detection_checksum_func_new_rat_detector_from_files();
-            if (checksum != 1223)
+            if (checksum != 33593)
             {
                 throw new UniffiContractChecksumException(
-                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_files` checksum `1223`, library returned `{checksum}`"
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_files` checksum `33593`, library returned `{checksum}`"
                 );
             }
         }
         {
             var checksum =
                 _UniFFILib.uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_bytes_and_video_capture_file();
-            if (checksum != 30584)
+            if (checksum != 5126)
             {
                 throw new UniffiContractChecksumException(
-                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_bytes_and_video_capture_file` checksum `30584`, library returned `{checksum}`"
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_bytes_and_video_capture_file` checksum `5126`, library returned `{checksum}`"
                 );
             }
         }
         {
             var checksum =
                 _UniFFILib.uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_bytes_and_video_capture_index();
-            if (checksum != 27557)
+            if (checksum != 47899)
             {
                 throw new UniffiContractChecksumException(
-                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_bytes_and_video_capture_index` checksum `27557`, library returned `{checksum}`"
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_bytes_and_video_capture_index` checksum `47899`, library returned `{checksum}`"
                 );
             }
         }
         {
             var checksum =
                 _UniFFILib.uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_file_and_video_capture_index();
-            if (checksum != 34493)
+            if (checksum != 31126)
             {
                 throw new UniffiContractChecksumException(
-                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_file_and_video_capture_index` checksum `34493`, library returned `{checksum}`"
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_func_new_rat_detector_from_model_file_and_video_capture_index` checksum `31126`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_backend();
+            if (checksum != 26492)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_backend` checksum `26492`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_fps();
+            if (checksum != 14809)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_fps` checksum `14809`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_frame_height();
+            if (checksum != 28960)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_frame_height` checksum `28960`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_frame_width();
+            if (checksum != 31800)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_frame_width` checksum `31800`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_mode();
+            if (checksum != 32893)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_get_capture_mode` checksum `32893`, library returned `{checksum}`"
                 );
             }
         }
@@ -1129,6 +1275,56 @@ static class _UniFFILib
             {
                 throw new UniffiContractChecksumException(
                     $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_run` checksum `30928`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_fps();
+            if (checksum != 62593)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_fps` checksum `62593`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_height();
+            if (checksum != 45799)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_height` checksum `45799`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_size();
+            if (checksum != 51621)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_size` checksum `51621`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_width();
+            if (checksum != 23943)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_frame_width` checksum `23943`, library returned `{checksum}`"
+                );
+            }
+        }
+        {
+            var checksum =
+                _UniFFILib.uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_mode();
+            if (checksum != 44855)
+            {
+                throw new UniffiContractChecksumException(
+                    $"uniffi.rat_object_detection: uniffi bindings expected function `uniffi_rat_object_detection_checksum_method_ratdetector_set_capture_mode` checksum `44855`, library returned `{checksum}`"
                 );
             }
         }
@@ -1525,7 +1721,37 @@ class FfiConverterTypeAnyError : FfiConverter<AnyError, IntPtr>
 internal interface IRatDetector
 {
     /// <exception cref="GenericException"></exception>
+    VideoCaptureApi GetCaptureBackend();
+
+    /// <exception cref="GenericException"></exception>
+    uint GetCaptureFps();
+
+    /// <exception cref="GenericException"></exception>
+    uint GetCaptureFrameHeight();
+
+    /// <exception cref="GenericException"></exception>
+    uint GetCaptureFrameWidth();
+
+    /// <exception cref="GenericException"></exception>
+    VideoCaptureMode GetCaptureMode();
+
+    /// <exception cref="GenericException"></exception>
     RunResult Run(RunArgs? @args);
+
+    /// <exception cref="GenericException"></exception>
+    void SetCaptureFps(uint @fps);
+
+    /// <exception cref="GenericException"></exception>
+    void SetCaptureFrameHeight(uint @frameHeight);
+
+    /// <exception cref="GenericException"></exception>
+    void SetCaptureFrameSize(uint @frameHeight, uint @frameWidth);
+
+    /// <exception cref="GenericException"></exception>
+    void SetCaptureFrameWidth(uint @frameWidth);
+
+    /// <exception cref="GenericException"></exception>
+    void SetCaptureMode(VideoCaptureMode @mode);
 }
 
 internal class RatDetector : FFIObject, IRatDetector
@@ -1547,6 +1773,91 @@ internal class RatDetector : FFIObject, IRatDetector
     }
 
     /// <exception cref="GenericException"></exception>
+    public VideoCaptureApi GetCaptureBackend()
+    {
+        return CallWithPointer(thisPtr =>
+            FfiConverterTypeVideoCaptureApi.INSTANCE.Lift(
+                _UniffiHelpers.RustCallWithError(
+                    FfiConverterTypeGenericException.INSTANCE,
+                    (ref RustCallStatus _status) =>
+                        _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_get_capture_backend(
+                            thisPtr,
+                            ref _status
+                        )
+                )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public uint GetCaptureFps()
+    {
+        return CallWithPointer(thisPtr =>
+            FfiConverterUInt32.INSTANCE.Lift(
+                _UniffiHelpers.RustCallWithError(
+                    FfiConverterTypeGenericException.INSTANCE,
+                    (ref RustCallStatus _status) =>
+                        _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_get_capture_fps(
+                            thisPtr,
+                            ref _status
+                        )
+                )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public uint GetCaptureFrameHeight()
+    {
+        return CallWithPointer(thisPtr =>
+            FfiConverterUInt32.INSTANCE.Lift(
+                _UniffiHelpers.RustCallWithError(
+                    FfiConverterTypeGenericException.INSTANCE,
+                    (ref RustCallStatus _status) =>
+                        _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_get_capture_frame_height(
+                            thisPtr,
+                            ref _status
+                        )
+                )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public uint GetCaptureFrameWidth()
+    {
+        return CallWithPointer(thisPtr =>
+            FfiConverterUInt32.INSTANCE.Lift(
+                _UniffiHelpers.RustCallWithError(
+                    FfiConverterTypeGenericException.INSTANCE,
+                    (ref RustCallStatus _status) =>
+                        _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_get_capture_frame_width(
+                            thisPtr,
+                            ref _status
+                        )
+                )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public VideoCaptureMode GetCaptureMode()
+    {
+        return CallWithPointer(thisPtr =>
+            FfiConverterTypeVideoCaptureMode.INSTANCE.Lift(
+                _UniffiHelpers.RustCallWithError(
+                    FfiConverterTypeGenericException.INSTANCE,
+                    (ref RustCallStatus _status) =>
+                        _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_get_capture_mode(
+                            thisPtr,
+                            ref _status
+                        )
+                )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
     public RunResult Run(RunArgs? @args)
     {
         return CallWithPointer(thisPtr =>
@@ -1562,6 +1873,87 @@ internal class RatDetector : FFIObject, IRatDetector
                             ref _status
                         )
                 )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public void SetCaptureFps(uint @fps)
+    {
+        CallWithPointer(thisPtr =>
+            _UniffiHelpers.RustCallWithError(
+                FfiConverterTypeGenericException.INSTANCE,
+                (ref RustCallStatus _status) =>
+                    _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_set_capture_fps(
+                        thisPtr,
+                        FfiConverterUInt32.INSTANCE.Lower(@fps),
+                        ref _status
+                    )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public void SetCaptureFrameHeight(uint @frameHeight)
+    {
+        CallWithPointer(thisPtr =>
+            _UniffiHelpers.RustCallWithError(
+                FfiConverterTypeGenericException.INSTANCE,
+                (ref RustCallStatus _status) =>
+                    _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_set_capture_frame_height(
+                        thisPtr,
+                        FfiConverterUInt32.INSTANCE.Lower(@frameHeight),
+                        ref _status
+                    )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public void SetCaptureFrameSize(uint @frameHeight, uint @frameWidth)
+    {
+        CallWithPointer(thisPtr =>
+            _UniffiHelpers.RustCallWithError(
+                FfiConverterTypeGenericException.INSTANCE,
+                (ref RustCallStatus _status) =>
+                    _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_set_capture_frame_size(
+                        thisPtr,
+                        FfiConverterUInt32.INSTANCE.Lower(@frameHeight),
+                        FfiConverterUInt32.INSTANCE.Lower(@frameWidth),
+                        ref _status
+                    )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public void SetCaptureFrameWidth(uint @frameWidth)
+    {
+        CallWithPointer(thisPtr =>
+            _UniffiHelpers.RustCallWithError(
+                FfiConverterTypeGenericException.INSTANCE,
+                (ref RustCallStatus _status) =>
+                    _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_set_capture_frame_width(
+                        thisPtr,
+                        FfiConverterUInt32.INSTANCE.Lower(@frameWidth),
+                        ref _status
+                    )
+            )
+        );
+    }
+
+    /// <exception cref="GenericException"></exception>
+    public void SetCaptureMode(VideoCaptureMode @mode)
+    {
+        CallWithPointer(thisPtr =>
+            _UniffiHelpers.RustCallWithError(
+                FfiConverterTypeGenericException.INSTANCE,
+                (ref RustCallStatus _status) =>
+                    _UniFFILib.uniffi_rat_object_detection_fn_method_ratdetector_set_capture_mode(
+                        thisPtr,
+                        FfiConverterTypeVideoCaptureMode.INSTANCE.Lower(@mode),
+                        ref _status
+                    )
             )
         );
     }
@@ -1633,36 +2025,111 @@ class FfiConverterTypeBoundingBox : FfiConverterRustBuffer<BoundingBox>
     }
 }
 
-internal record CameraResolution(uint @width, uint @height, uint @fps) { }
+internal record CaptureOptions(
+    uint? @frameHeight,
+    uint? @frameWidth,
+    uint? @fps,
+    VideoCaptureApi? @backend,
+    VideoCaptureMode? @mode
+) { }
 
-class FfiConverterTypeCameraResolution
-    : FfiConverterRustBuffer<CameraResolution>
+class FfiConverterTypeCaptureOptions : FfiConverterRustBuffer<CaptureOptions>
 {
-    public static FfiConverterTypeCameraResolution INSTANCE =
-        new FfiConverterTypeCameraResolution();
+    public static FfiConverterTypeCaptureOptions INSTANCE =
+        new FfiConverterTypeCaptureOptions();
 
-    public override CameraResolution Read(BigEndianStream stream)
+    public override CaptureOptions Read(BigEndianStream stream)
     {
-        return new CameraResolution(
-            @width: FfiConverterUInt32.INSTANCE.Read(stream),
-            @height: FfiConverterUInt32.INSTANCE.Read(stream),
-            @fps: FfiConverterUInt32.INSTANCE.Read(stream)
+        return new CaptureOptions(
+            @frameHeight: FfiConverterOptionalUInt32.INSTANCE.Read(stream),
+            @frameWidth: FfiConverterOptionalUInt32.INSTANCE.Read(stream),
+            @fps: FfiConverterOptionalUInt32.INSTANCE.Read(stream),
+            @backend: FfiConverterOptionalTypeVideoCaptureApi.INSTANCE.Read(
+                stream
+            ),
+            @mode: FfiConverterOptionalTypeVideoCaptureMode.INSTANCE.Read(
+                stream
+            )
         );
     }
 
-    public override int AllocationSize(CameraResolution value)
+    public override int AllocationSize(CaptureOptions value)
     {
         return 0
-            + FfiConverterUInt32.INSTANCE.AllocationSize(value.@width)
-            + FfiConverterUInt32.INSTANCE.AllocationSize(value.@height)
-            + FfiConverterUInt32.INSTANCE.AllocationSize(value.@fps);
+            + FfiConverterOptionalUInt32.INSTANCE.AllocationSize(
+                value.@frameHeight
+            )
+            + FfiConverterOptionalUInt32.INSTANCE.AllocationSize(
+                value.@frameWidth
+            )
+            + FfiConverterOptionalUInt32.INSTANCE.AllocationSize(value.@fps)
+            + FfiConverterOptionalTypeVideoCaptureApi.INSTANCE.AllocationSize(
+                value.@backend
+            )
+            + FfiConverterOptionalTypeVideoCaptureMode.INSTANCE.AllocationSize(
+                value.@mode
+            );
     }
 
-    public override void Write(CameraResolution value, BigEndianStream stream)
+    public override void Write(CaptureOptions value, BigEndianStream stream)
     {
-        FfiConverterUInt32.INSTANCE.Write(value.@width, stream);
-        FfiConverterUInt32.INSTANCE.Write(value.@height, stream);
-        FfiConverterUInt32.INSTANCE.Write(value.@fps, stream);
+        FfiConverterOptionalUInt32.INSTANCE.Write(value.@frameHeight, stream);
+        FfiConverterOptionalUInt32.INSTANCE.Write(value.@frameWidth, stream);
+        FfiConverterOptionalUInt32.INSTANCE.Write(value.@fps, stream);
+        FfiConverterOptionalTypeVideoCaptureApi.INSTANCE.Write(
+            value.@backend,
+            stream
+        );
+        FfiConverterOptionalTypeVideoCaptureMode.INSTANCE.Write(
+            value.@mode,
+            stream
+        );
+    }
+}
+
+internal record CtorOptions(
+    SessionOptions? @session,
+    CaptureOptions? @capture
+) { }
+
+class FfiConverterTypeCtorOptions : FfiConverterRustBuffer<CtorOptions>
+{
+    public static FfiConverterTypeCtorOptions INSTANCE =
+        new FfiConverterTypeCtorOptions();
+
+    public override CtorOptions Read(BigEndianStream stream)
+    {
+        return new CtorOptions(
+            @session: FfiConverterOptionalTypeSessionOptions.INSTANCE.Read(
+                stream
+            ),
+            @capture: FfiConverterOptionalTypeCaptureOptions.INSTANCE.Read(
+                stream
+            )
+        );
+    }
+
+    public override int AllocationSize(CtorOptions value)
+    {
+        return 0
+            + FfiConverterOptionalTypeSessionOptions.INSTANCE.AllocationSize(
+                value.@session
+            )
+            + FfiConverterOptionalTypeCaptureOptions.INSTANCE.AllocationSize(
+                value.@capture
+            );
+    }
+
+    public override void Write(CtorOptions value, BigEndianStream stream)
+    {
+        FfiConverterOptionalTypeSessionOptions.INSTANCE.Write(
+            value.@session,
+            stream
+        );
+        FfiConverterOptionalTypeCaptureOptions.INSTANCE.Write(
+            value.@capture,
+            stream
+        );
     }
 }
 
@@ -1708,7 +2175,6 @@ internal record RunArgs(
     float? @minConfidence,
     bool? @showLabels,
     bool? @showConfidence,
-    CameraResolution? @cameraResolution,
     bool? @detectRats
 ) { }
 
@@ -1723,9 +2189,6 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
             @minConfidence: FfiConverterOptionalFloat.INSTANCE.Read(stream),
             @showLabels: FfiConverterOptionalBoolean.INSTANCE.Read(stream),
             @showConfidence: FfiConverterOptionalBoolean.INSTANCE.Read(stream),
-            @cameraResolution: FfiConverterOptionalTypeCameraResolution.INSTANCE.Read(
-                stream
-            ),
             @detectRats: FfiConverterOptionalBoolean.INSTANCE.Read(stream)
         );
     }
@@ -1742,9 +2205,6 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
             + FfiConverterOptionalBoolean.INSTANCE.AllocationSize(
                 value.@showConfidence
             )
-            + FfiConverterOptionalTypeCameraResolution.INSTANCE.AllocationSize(
-                value.@cameraResolution
-            )
             + FfiConverterOptionalBoolean.INSTANCE.AllocationSize(
                 value.@detectRats
             );
@@ -1756,10 +2216,6 @@ class FfiConverterTypeRunArgs : FfiConverterRustBuffer<RunArgs>
         FfiConverterOptionalBoolean.INSTANCE.Write(value.@showLabels, stream);
         FfiConverterOptionalBoolean.INSTANCE.Write(
             value.@showConfidence,
-            stream
-        );
-        FfiConverterOptionalTypeCameraResolution.INSTANCE.Write(
-            value.@cameraResolution,
             stream
         );
         FfiConverterOptionalBoolean.INSTANCE.Write(value.@detectRats, stream);
@@ -2023,6 +2479,113 @@ class FfiConverterTypeSessionGraphOptimizationLevel
     }
 }
 
+internal enum VideoCaptureApi : int
+{
+    Any,
+    V4l2,
+    Firewire,
+    Qt,
+    Unicap,
+    Dshow,
+    Pvapi,
+    Openni,
+    OpenniAsus,
+    Android,
+    Xiapi,
+    Avfoundation,
+    Giaganetix,
+    Msmf,
+    Winrt,
+    Intelperc,
+    Openni2,
+    Openni2Asus,
+    Gphoto2,
+    Gstreamer,
+    Ffmpeg,
+    Images,
+    Aravis,
+    OpencvMjpeg,
+    IntelMfx,
+    Xine,
+}
+
+class FfiConverterTypeVideoCaptureApi : FfiConverterRustBuffer<VideoCaptureApi>
+{
+    public static FfiConverterTypeVideoCaptureApi INSTANCE =
+        new FfiConverterTypeVideoCaptureApi();
+
+    public override VideoCaptureApi Read(BigEndianStream stream)
+    {
+        var value = stream.ReadInt() - 1;
+        if (Enum.IsDefined(typeof(VideoCaptureApi), value))
+        {
+            return (VideoCaptureApi)value;
+        }
+        else
+        {
+            throw new InternalException(
+                String.Format(
+                    "invalid enum value '{0}' in FfiConverterTypeVideoCaptureApi.Read()",
+                    value
+                )
+            );
+        }
+    }
+
+    public override int AllocationSize(VideoCaptureApi value)
+    {
+        return 4;
+    }
+
+    public override void Write(VideoCaptureApi value, BigEndianStream stream)
+    {
+        stream.WriteInt((int)value + 1);
+    }
+}
+
+internal enum VideoCaptureMode : int
+{
+    Bgr,
+    Rgb,
+    Gray,
+    Yuyv,
+}
+
+class FfiConverterTypeVideoCaptureMode
+    : FfiConverterRustBuffer<VideoCaptureMode>
+{
+    public static FfiConverterTypeVideoCaptureMode INSTANCE =
+        new FfiConverterTypeVideoCaptureMode();
+
+    public override VideoCaptureMode Read(BigEndianStream stream)
+    {
+        var value = stream.ReadInt() - 1;
+        if (Enum.IsDefined(typeof(VideoCaptureMode), value))
+        {
+            return (VideoCaptureMode)value;
+        }
+        else
+        {
+            throw new InternalException(
+                String.Format(
+                    "invalid enum value '{0}' in FfiConverterTypeVideoCaptureMode.Read()",
+                    value
+                )
+            );
+        }
+    }
+
+    public override int AllocationSize(VideoCaptureMode value)
+    {
+        return 4;
+    }
+
+    public override void Write(VideoCaptureMode value, BigEndianStream stream)
+    {
+        stream.WriteInt((int)value + 1);
+    }
+}
+
 class FfiConverterOptionalUInt8 : FfiConverterRustBuffer<byte?>
 {
     public static FfiConverterOptionalUInt8 INSTANCE =
@@ -2059,6 +2622,46 @@ class FfiConverterOptionalUInt8 : FfiConverterRustBuffer<byte?>
         {
             stream.WriteByte(1);
             FfiConverterUInt8.INSTANCE.Write((byte)value, stream);
+        }
+    }
+}
+
+class FfiConverterOptionalUInt32 : FfiConverterRustBuffer<uint?>
+{
+    public static FfiConverterOptionalUInt32 INSTANCE =
+        new FfiConverterOptionalUInt32();
+
+    public override uint? Read(BigEndianStream stream)
+    {
+        if (stream.ReadByte() == 0)
+        {
+            return null;
+        }
+        return FfiConverterUInt32.INSTANCE.Read(stream);
+    }
+
+    public override int AllocationSize(uint? value)
+    {
+        if (value == null)
+        {
+            return 1;
+        }
+        else
+        {
+            return 1 + FfiConverterUInt32.INSTANCE.AllocationSize((uint)value);
+        }
+    }
+
+    public override void Write(uint? value, BigEndianStream stream)
+    {
+        if (value == null)
+        {
+            stream.WriteByte(0);
+        }
+        else
+        {
+            stream.WriteByte(1);
+            FfiConverterUInt32.INSTANCE.Write((uint)value, stream);
         }
     }
 }
@@ -2143,22 +2746,22 @@ class FfiConverterOptionalBoolean : FfiConverterRustBuffer<bool?>
     }
 }
 
-class FfiConverterOptionalTypeCameraResolution
-    : FfiConverterRustBuffer<CameraResolution?>
+class FfiConverterOptionalTypeCaptureOptions
+    : FfiConverterRustBuffer<CaptureOptions?>
 {
-    public static FfiConverterOptionalTypeCameraResolution INSTANCE =
-        new FfiConverterOptionalTypeCameraResolution();
+    public static FfiConverterOptionalTypeCaptureOptions INSTANCE =
+        new FfiConverterOptionalTypeCaptureOptions();
 
-    public override CameraResolution? Read(BigEndianStream stream)
+    public override CaptureOptions? Read(BigEndianStream stream)
     {
         if (stream.ReadByte() == 0)
         {
             return null;
         }
-        return FfiConverterTypeCameraResolution.INSTANCE.Read(stream);
+        return FfiConverterTypeCaptureOptions.INSTANCE.Read(stream);
     }
 
-    public override int AllocationSize(CameraResolution? value)
+    public override int AllocationSize(CaptureOptions? value)
     {
         if (value == null)
         {
@@ -2167,13 +2770,13 @@ class FfiConverterOptionalTypeCameraResolution
         else
         {
             return 1
-                + FfiConverterTypeCameraResolution.INSTANCE.AllocationSize(
-                    (CameraResolution)value
+                + FfiConverterTypeCaptureOptions.INSTANCE.AllocationSize(
+                    (CaptureOptions)value
                 );
         }
     }
 
-    public override void Write(CameraResolution? value, BigEndianStream stream)
+    public override void Write(CaptureOptions? value, BigEndianStream stream)
     {
         if (value == null)
         {
@@ -2182,8 +2785,54 @@ class FfiConverterOptionalTypeCameraResolution
         else
         {
             stream.WriteByte(1);
-            FfiConverterTypeCameraResolution.INSTANCE.Write(
-                (CameraResolution)value,
+            FfiConverterTypeCaptureOptions.INSTANCE.Write(
+                (CaptureOptions)value,
+                stream
+            );
+        }
+    }
+}
+
+class FfiConverterOptionalTypeCtorOptions : FfiConverterRustBuffer<CtorOptions?>
+{
+    public static FfiConverterOptionalTypeCtorOptions INSTANCE =
+        new FfiConverterOptionalTypeCtorOptions();
+
+    public override CtorOptions? Read(BigEndianStream stream)
+    {
+        if (stream.ReadByte() == 0)
+        {
+            return null;
+        }
+        return FfiConverterTypeCtorOptions.INSTANCE.Read(stream);
+    }
+
+    public override int AllocationSize(CtorOptions? value)
+    {
+        if (value == null)
+        {
+            return 1;
+        }
+        else
+        {
+            return 1
+                + FfiConverterTypeCtorOptions.INSTANCE.AllocationSize(
+                    (CtorOptions)value
+                );
+        }
+    }
+
+    public override void Write(CtorOptions? value, BigEndianStream stream)
+    {
+        if (value == null)
+        {
+            stream.WriteByte(0);
+        }
+        else
+        {
+            stream.WriteByte(1);
+            FfiConverterTypeCtorOptions.INSTANCE.Write(
+                (CtorOptions)value,
                 stream
             );
         }
@@ -2332,6 +2981,100 @@ class FfiConverterOptionalTypeSessionGraphOptimizationLevel
     }
 }
 
+class FfiConverterOptionalTypeVideoCaptureApi
+    : FfiConverterRustBuffer<VideoCaptureApi?>
+{
+    public static FfiConverterOptionalTypeVideoCaptureApi INSTANCE =
+        new FfiConverterOptionalTypeVideoCaptureApi();
+
+    public override VideoCaptureApi? Read(BigEndianStream stream)
+    {
+        if (stream.ReadByte() == 0)
+        {
+            return null;
+        }
+        return FfiConverterTypeVideoCaptureApi.INSTANCE.Read(stream);
+    }
+
+    public override int AllocationSize(VideoCaptureApi? value)
+    {
+        if (value == null)
+        {
+            return 1;
+        }
+        else
+        {
+            return 1
+                + FfiConverterTypeVideoCaptureApi.INSTANCE.AllocationSize(
+                    (VideoCaptureApi)value
+                );
+        }
+    }
+
+    public override void Write(VideoCaptureApi? value, BigEndianStream stream)
+    {
+        if (value == null)
+        {
+            stream.WriteByte(0);
+        }
+        else
+        {
+            stream.WriteByte(1);
+            FfiConverterTypeVideoCaptureApi.INSTANCE.Write(
+                (VideoCaptureApi)value,
+                stream
+            );
+        }
+    }
+}
+
+class FfiConverterOptionalTypeVideoCaptureMode
+    : FfiConverterRustBuffer<VideoCaptureMode?>
+{
+    public static FfiConverterOptionalTypeVideoCaptureMode INSTANCE =
+        new FfiConverterOptionalTypeVideoCaptureMode();
+
+    public override VideoCaptureMode? Read(BigEndianStream stream)
+    {
+        if (stream.ReadByte() == 0)
+        {
+            return null;
+        }
+        return FfiConverterTypeVideoCaptureMode.INSTANCE.Read(stream);
+    }
+
+    public override int AllocationSize(VideoCaptureMode? value)
+    {
+        if (value == null)
+        {
+            return 1;
+        }
+        else
+        {
+            return 1
+                + FfiConverterTypeVideoCaptureMode.INSTANCE.AllocationSize(
+                    (VideoCaptureMode)value
+                );
+        }
+    }
+
+    public override void Write(VideoCaptureMode? value, BigEndianStream stream)
+    {
+        if (value == null)
+        {
+            stream.WriteByte(0);
+        }
+        else
+        {
+            stream.WriteByte(1);
+            FfiConverterTypeVideoCaptureMode.INSTANCE.Write(
+                (VideoCaptureMode)value,
+                stream
+            );
+        }
+    }
+}
+
 class FfiConverterSequenceTypeDetection
     : FfiConverterRustBuffer<List<Detection>>
 {
@@ -2400,7 +3143,7 @@ internal static class RatObjectDetectionMethods
     /// <exception cref="GenericException"></exception>
     public static RatDetector NewRatDetectorFromDefaultModelAndVideoCaptureFile(
         String @videoCaptureFile,
-        SessionOptions? @options
+        CtorOptions? @options
     )
     {
         return FfiConverterTypeRatDetector.INSTANCE.Lift(
@@ -2409,7 +3152,7 @@ internal static class RatObjectDetectionMethods
                 (ref RustCallStatus _status) =>
                     _UniFFILib.uniffi_rat_object_detection_fn_func_new_rat_detector_from_default_model_and_video_capture_file(
                         FfiConverterString.INSTANCE.Lower(@videoCaptureFile),
-                        FfiConverterOptionalTypeSessionOptions.INSTANCE.Lower(
+                        FfiConverterOptionalTypeCtorOptions.INSTANCE.Lower(
                             @options
                         ),
                         ref _status
@@ -2421,7 +3164,7 @@ internal static class RatObjectDetectionMethods
     /// <exception cref="GenericException"></exception>
     public static RatDetector NewRatDetectorFromDefaultModelAndVideoCaptureIndex(
         uint @videoCaptureIndex,
-        SessionOptions? @options
+        CtorOptions? @options
     )
     {
         return FfiConverterTypeRatDetector.INSTANCE.Lift(
@@ -2430,7 +3173,7 @@ internal static class RatObjectDetectionMethods
                 (ref RustCallStatus _status) =>
                     _UniFFILib.uniffi_rat_object_detection_fn_func_new_rat_detector_from_default_model_and_video_capture_index(
                         FfiConverterUInt32.INSTANCE.Lower(@videoCaptureIndex),
-                        FfiConverterOptionalTypeSessionOptions.INSTANCE.Lower(
+                        FfiConverterOptionalTypeCtorOptions.INSTANCE.Lower(
                             @options
                         ),
                         ref _status
@@ -2443,7 +3186,7 @@ internal static class RatObjectDetectionMethods
     public static RatDetector NewRatDetectorFromFiles(
         String @modelFile,
         String @videoCaptureFile,
-        SessionOptions? @options
+        CtorOptions? @options
     )
     {
         return FfiConverterTypeRatDetector.INSTANCE.Lift(
@@ -2453,7 +3196,7 @@ internal static class RatObjectDetectionMethods
                     _UniFFILib.uniffi_rat_object_detection_fn_func_new_rat_detector_from_files(
                         FfiConverterString.INSTANCE.Lower(@modelFile),
                         FfiConverterString.INSTANCE.Lower(@videoCaptureFile),
-                        FfiConverterOptionalTypeSessionOptions.INSTANCE.Lower(
+                        FfiConverterOptionalTypeCtorOptions.INSTANCE.Lower(
                             @options
                         ),
                         ref _status
@@ -2466,7 +3209,7 @@ internal static class RatObjectDetectionMethods
     public static RatDetector NewRatDetectorFromModelBytesAndVideoCaptureFile(
         byte[] @modelBytes,
         String @videoCaptureFile,
-        SessionOptions? @options
+        CtorOptions? @options
     )
     {
         return FfiConverterTypeRatDetector.INSTANCE.Lift(
@@ -2476,7 +3219,7 @@ internal static class RatObjectDetectionMethods
                     _UniFFILib.uniffi_rat_object_detection_fn_func_new_rat_detector_from_model_bytes_and_video_capture_file(
                         FfiConverterByteArray.INSTANCE.Lower(@modelBytes),
                         FfiConverterString.INSTANCE.Lower(@videoCaptureFile),
-                        FfiConverterOptionalTypeSessionOptions.INSTANCE.Lower(
+                        FfiConverterOptionalTypeCtorOptions.INSTANCE.Lower(
                             @options
                         ),
                         ref _status
@@ -2489,7 +3232,7 @@ internal static class RatObjectDetectionMethods
     public static RatDetector NewRatDetectorFromModelBytesAndVideoCaptureIndex(
         byte[] @modelBytes,
         uint @videoCaptureIndex,
-        SessionOptions? @options
+        CtorOptions? @options
     )
     {
         return FfiConverterTypeRatDetector.INSTANCE.Lift(
@@ -2499,7 +3242,7 @@ internal static class RatObjectDetectionMethods
                     _UniFFILib.uniffi_rat_object_detection_fn_func_new_rat_detector_from_model_bytes_and_video_capture_index(
                         FfiConverterByteArray.INSTANCE.Lower(@modelBytes),
                         FfiConverterUInt32.INSTANCE.Lower(@videoCaptureIndex),
-                        FfiConverterOptionalTypeSessionOptions.INSTANCE.Lower(
+                        FfiConverterOptionalTypeCtorOptions.INSTANCE.Lower(
                             @options
                         ),
                         ref _status
@@ -2512,7 +3255,7 @@ internal static class RatObjectDetectionMethods
     public static RatDetector NewRatDetectorFromModelFileAndVideoCaptureIndex(
         String @modelFile,
         uint @videoCaptureIndex,
-        SessionOptions? @options
+        CtorOptions? @options
     )
     {
         return FfiConverterTypeRatDetector.INSTANCE.Lift(
@@ -2522,7 +3265,7 @@ internal static class RatObjectDetectionMethods
                     _UniFFILib.uniffi_rat_object_detection_fn_func_new_rat_detector_from_model_file_and_video_capture_index(
                         FfiConverterString.INSTANCE.Lower(@modelFile),
                         FfiConverterUInt32.INSTANCE.Lower(@videoCaptureIndex),
-                        FfiConverterOptionalTypeSessionOptions.INSTANCE.Lower(
+                        FfiConverterOptionalTypeCtorOptions.INSTANCE.Lower(
                             @options
                         ),
                         ref _status

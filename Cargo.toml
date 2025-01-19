@@ -6,6 +6,7 @@ members = ["cli/rs/uniffi-bindgen", "packages/rs/*"]
 [workspace.package]
 rust-version = "1.86.0"
 edition = "2024"
+version = "0.0.0-semantically-released"
 
 [profile.release]
 opt-level = 3            # optimize for speed but increase binary size
@@ -30,7 +31,7 @@ eyre = "^0.6.12"
 time = { version = "^0.3.37", features = [] }
 derive_more = { version = "^1.0.0", features = ["full"] }
 strum = { version = "^0.26.3", features = ["derive"] }
-tokio = { version = "1.42.0", features = [
+tokio = { version = "^1.42.0", features = [
     "rt",
     "rt-multi-thread",
     "tracing",
@@ -41,10 +42,19 @@ tokio = { version = "1.42.0", features = [
     "time",
     "macros",
 ] }
-rand = "0.8.5"
-num-traits = "0.2.19"
+rand = "^0.8.5"
+num-traits = "^0.2.19"
 uniffi = { version = "=0.25.0" }
 itertools = { version = "^0.14.0" }
-rayon = { version = "1.10.0" }
+rayon = { version = "^1.10.0" }
 half = { version = "^2.4.1" }
 num_cpus = { version = "^1.16.0" }
+reqwest = { version = "^0.12.12", features = [
+    "charset",
+    "blocking",
+    "rustls-tls",
+    "http2",
+], default-features = false }
+tar = { version = "^0.4.38" }
+flate2 = { version = "^1.0.35" }
+bytes = { version = "^1.0.0" }

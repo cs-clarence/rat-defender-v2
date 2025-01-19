@@ -2,7 +2,7 @@
 name = "rat-object-detection"
 rust-version.workspace = true
 edition.workspace = true
-version = "0.1.0"
+version.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
@@ -10,37 +10,40 @@ path = "src/lib.rs"
 name = "rat_object_detection"
 
 [features]
-onnx_cuda = ["ort/cuda"]
-onnx_rocm = ["ort/rocm"]
-onnx_rknpu = ["ort/rknpu"]
+onnx-cuda = ["ort/cuda", "onnx-lib-load-dynamic"]
+onnx-rocm = ["ort/rocm", "onnx-lib-load-dynamic"]
+onnx-rknpu = ["ort/rknpu", "onnx-lib-load-dynamic"]
+onnx-acl = ["ort/acl", "onnx-lib-load-dynamic"]
+onnx-armnn = ["ort/armnn", "onnx-lib-load-dynamic"]
+onnx-lib-load-dynamic = ["ort/load-dynamic"]
 blas = ["ndarray/blas"]
 default = ["blas"]
 debug_embed = ["rust-embed/debug-embed"]
 
 [dependencies]
 ndarray = { version = "0.16.1", features = ["rayon"] }
+strum = { workspace = true }
 opencv = "0.94.1"
 ort = { version = "2.0.0-rc.9" }
-rayon = { workspace = true }
 rust-embed = { version = "8.5.0", features = [
     "compression",
     "include-exclude",
 ] }
-serde = { workspace = true }
-serde_json = { workspace = true }
-tracing = { workspace = true }
-tracing-subscriber = { workspace = true }
 thiserror = { workspace = true }
 eyre = { workspace = true }
-time = { workspace = true }
-rand = { workspace = true }
-itertools = { workspace = true }
-half = { workspace = true }
-num-traits = { workspace = true }
-tokio = { workspace = true }
 uniffi = { workspace = true, features = ["cli"] }
 num_cpus = { workspace = true }
+half = { workspace = true }
+num-traits = { workspace = true }
+itertools = { workspace = true }
+rand = { workspace = true }
 
 
 [build-dependencies]
-uniffi = { workspace = true, features = ["build"] }
+octocrab = { version = "^0.43.0", features = [] }
+tokio = { workspace = true }
+eyre = { workspace = true }
+reqwest = { workspace = true }
+tar = { workspace = true }
+flate2 = { workspace = true }
+bytes = { workspace = true }
