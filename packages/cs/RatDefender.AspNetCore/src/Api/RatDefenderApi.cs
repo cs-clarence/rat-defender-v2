@@ -1,4 +1,5 @@
-﻿using Common.AspNetCore.Dtos.Responses;
+﻿using System.Runtime.CompilerServices;
+using Common.AspNetCore.Dtos.Responses;
 using Common.AspNetCore.Responses;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
@@ -60,7 +61,7 @@ public static class RatDefenderApi
 
         routes.MapGet("/images/current.jpeg", GetCurrentImageJpeg)
             .WithName(nameof(GetCurrentImageJpeg)).WithTags("Images");
-        
+
         routes.MapGet("/images/current.mjpeg", GetCurrentImageMotionJpeg)
             .WithName(nameof(GetCurrentImageMotionJpeg)).WithTags("Images");
 
@@ -181,19 +182,26 @@ public static class RatDefenderApi
     }
 
     private static async IAsyncEnumerable<byte[]> MapCurrentImageStream(
-        IAsyncEnumerable<ImageDto> stream)
+        IAsyncEnumerable<ImageDto> stream,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        await foreach (var item in stream)
+        await foreach (var item in stream.WithCancellation(cancellationToken))
         {
             yield return item.Buffer;
+            if (cancellationToken.IsCancellationRequested) break;
         }
     }
 
     public static Task<MotionJpegResult> GetCurrentImageMotionJpeg(
-        this IMediator mediator
+        this IMediator mediator,
+        CancellationToken cancellationToken = default
     )
     {
-        var stream = mediator.CreateStream(GetCurrentImageStreamQuery.Instance);
-        return Task.FromResult(new MotionJpegResult(MapCurrentImageStream(stream)));
+        var stream = mediator.CreateStream(GetCurrentImageStreamQuery.Instance,
+            cancellationToken);
+        return Task.FromResult(
+            new MotionJpegResult(
+                MapCurrentImageStream(stream, cancellationToken),
+                cancellationToken));
     }
 }

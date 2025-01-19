@@ -1,0 +1,10 @@
+{
+    "name": "@repo/rat-defender.infrastructure.iot",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/common.infrastructure.iot": "workspace:*",
+        "@repo/common.application": "workspace:*",
+        "@repo/common.hosted-services": "workspace:*",
+        "@repo/rat-defender.domain": "workspace:*"
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "name": "@repo/wrapper-gen.unit-tests",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/wrapper-gen": "workspace:*"
+    }
+}

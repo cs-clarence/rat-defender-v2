@@ -1,0 +1,9 @@
+{
+    "name": "@repo/rat-defender.aspnetcore",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/rat-defender.application": "workspace:*",
+        "@repo/common.aspnetcore": "workspace:*",
+        "@repo/common.application": "workspace:*"
+    }
+}

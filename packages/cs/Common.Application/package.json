@@ -1,0 +1,8 @@
+{
+    "name": "@repo/common.application",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/common.domain": "workspace:*",
+        "@repo/common.utilities": "workspace:*"
+    }
+}

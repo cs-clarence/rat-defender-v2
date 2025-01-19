@@ -133,6 +133,7 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
     {
         var infer = _inferenceOptions.Value;
         var opt = _options.Value;
+        ct.ThrowIfCancellationRequested();
         var result = _detector.Run(
             new RunArgs(
                 infer.MinimumConfidence,

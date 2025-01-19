@@ -1,24 +1,27 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RatDefender.Domain.Configurations;
-using RatDefender.Domain.Entities;
 using RatDefender.Domain.Services.Abstractions;
 
 namespace RatDefender.Domain.Services;
 
 public record DetectionResult(
-    ulong Detections = 0
-);
+    ulong Detections,
+    bool IsTemperatureDetected,
+    bool IgnoreTemperature,
+    DateTimeOffset DetectedAt
+)
+{
+    public bool IsDetected
+        => Detections > 0 && (IgnoreTemperature || IsTemperatureDetected);
+}
 
 public class RatDetector(
     IOptions<RatDetectorOptions> options,
     IRatDetectionImageProcessor imageProcessor,
-    IThermalImager thermalImager,
-    ILogger<RatDetector> logger,
-    IFoodDispenser foodDispenser,
-    IRatDetectionRecordsService records) : IRatDetector
+    IThermalImager thermalImager
+) : IRatDetector
 {
-    private static bool IsRatDetected(ThermalImagerReading reading,
+    private static bool IsRatTemperatureDetected(ThermalImagerReading reading,
         RatDetectorOptions options)
     {
         var width = reading.Image.GetLength(0);
@@ -41,38 +44,24 @@ public class RatDetector(
         return false;
     }
 
-    public async Task<DetectionResult> RunAsync(
+
+    public async Task<DetectionResult> GetDetectionsAsync(
         CancellationToken stoppingToken = default)
     {
         var opt = options.Value;
         var results = await imageProcessor.ProcessImageAsync(stoppingToken);
         var count =
             results.Detections.Any(
-                box => box.Confidence > opt.MinimumConfidence)
+                box => box.Confidence >= opt.MinimumConfidence)
                 ? 1u
                 : 0u;
 
-        if (count == 0)
-        {
-            return new DetectionResult(count);
-        }
-
+        stoppingToken.ThrowIfCancellationRequested();
 
         var thermReading = await thermalImager.ReadImageAsync(stoppingToken);
+        var temperatureDetected = IsRatTemperatureDetected(thermReading, opt);
 
-        if (IsRatDetected(thermReading, opt) || !opt.UseThermalSensor)
-        {
-            var t = records.AddDetectionAsync(new RatDetection(
-                DateTimeOffset.UtcNow,
-                count
-            ), stoppingToken);
-
-            await Task.WhenAll(t,
-                foodDispenser.DispenseAsync(count, stoppingToken));
-            logger.LogInformation("Detected {count} rats", count);
-        }
-
-
-        return new DetectionResult(count);
+        return new DetectionResult(count, temperatureDetected,
+            !opt.UseThermalSensor, DateTimeOffset.UtcNow);
     }
 }

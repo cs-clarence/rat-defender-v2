@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace RatDefender.AspNetCore.Results;
 
-public class MotionJpegResult(IAsyncEnumerable<byte[]> stream) : IResult
+public class MotionJpegResult(IAsyncEnumerable<byte[]> stream, CancellationToken cancellationToken) : IResult
 {
     private const string Boundary = "MotionImageStream";
 
@@ -16,7 +16,6 @@ public class MotionJpegResult(IAsyncEnumerable<byte[]> stream) : IResult
         httpContext.Response.ContentType = ContentType;
 
         var output = httpContext.Response.Body;
-        var cancellationToken = httpContext.RequestAborted;
 
         try
         {

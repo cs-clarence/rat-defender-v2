@@ -1,0 +1,7 @@
+{
+    "name": "@repo/common.testing.unit",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/common.testing": "workspace:*"
+    }
+}

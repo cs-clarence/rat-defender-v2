@@ -1,0 +1,9 @@
+{
+    "name": "@repo/rat-defender.hosted-services",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/rat-defender.domain": "workspace:*",
+        "@repo/common.application": "workspace:*",
+        "@repo/rat-defender.infrastructure.object-detection": "workspace:*"
+    }
+}

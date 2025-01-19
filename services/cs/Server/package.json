@@ -10,7 +10,8 @@
         "codegen": "bun run cleanup && bun run codegen:db-schema",
         "copy-files-to-output": "with-env -- 'cp ./rat-defender.db.sqlite ./appsettings.json ./bin/out/'",
         "build": "with-env 'dotnet publish Server.csproj --runtime linux-arm64 -c Release -o ./bin/out' && bun run copy-files-to-output",
-        "copy-out-to-server": "with-env -- 'sshpass -p \"$SERVER_PASSWORD\" -- scp -r ./bin/out/. $SERVER_USERNAME@$SERVER_HOST:$SERVER_COPY_PATH'"
+        "copy-out-to-server": "with-env -- 'sshpass -p \"$SERVER_PASSWORD\" -- scp -r ./bin/out/. $SERVER_USERNAME@$SERVER_HOST:$SERVER_COPY_PATH'",
+        "deploy": "bun run copy-out-to-server"
     },
     "dependencies": {
         "@repo/rat-defender.infrastructure.object-detection": "workspace:*",

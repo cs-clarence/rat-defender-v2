@@ -1,0 +1,8 @@
+{
+    "name": "@repo/common.s3",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/common.application": "workspace:*",
+        "@repo/common.configuration": "workspace:*"
+    }
+}

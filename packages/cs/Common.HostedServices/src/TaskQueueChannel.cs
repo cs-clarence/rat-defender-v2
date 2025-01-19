@@ -25,6 +25,8 @@ public class TaskQueueChannel(Channel<TaskQueueItem> channel)
     {
         while (await channel.Reader.WaitToReadAsync(cancellationToken))
         {
+            if (cancellationToken.IsCancellationRequested) break;
+            
             var item = await channel.Reader.ReadAsync(cancellationToken);
             yield return item;
         }

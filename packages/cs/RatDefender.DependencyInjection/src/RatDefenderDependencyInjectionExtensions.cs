@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RatDefender.Domain.Configurations;
+using RatDefender.Domain.Repositories.Abstractions;
 using RatDefender.Domain.Services;
 using RatDefender.Domain.Services.Abstractions;
 using RatDefender.HostedServices;
@@ -14,6 +15,7 @@ using RatDefender.Infrastructure.ObjectDetection;
 using RatDefender.Infrastructure.ObjectDetection.Configurations;
 using RatDefender.Infrastructure.ObjectDetection.Mocks;
 using RatDefender.Infrastructure.Persistence.DbContexts;
+using RatDefender.Infrastructure.Persistence.Repositories;
 
 
 namespace RatDefender.DependencyInjection;
@@ -48,8 +50,8 @@ public static class RatDefenderDependencyInjectionExtensions
             .ValidateOnStart();
 
         services.AddScoped<
-            Domain.Repositories.Abstractions.IRatDetectionRepository,
-            Infrastructure.Persistence.Repositories.RatDetectionRepository
+            IRatDetectionRepository,
+            RatDetectionRepository
         >();
 
         services.AddScoped<
@@ -57,9 +59,14 @@ public static class RatDefenderDependencyInjectionExtensions
             RatDetectionRecordsRecordsService
         >();
 
-        services.AddScoped<
+        services.AddSingleton<
             IRatDetector,
             RatDetector
+        >();
+        
+        services.AddScoped<
+            IRatDetectionResultHandler,
+            RatDetectionResultHandler
         >();
 
 

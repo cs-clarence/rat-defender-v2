@@ -21,6 +21,10 @@
                 "./obj/*"
             ]
         },
+        "deploy": {
+            "dependsOn": ["build"],
+            "cache": false
+        },
         "codegen": {
             "dependsOn": ["^build"],
             "inputs": ["./src/*"]

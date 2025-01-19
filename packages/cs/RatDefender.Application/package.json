@@ -1,0 +1,8 @@
+{
+    "name": "@repo/rat-defender.application",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/rat-defender.domain": "workspace:*",
+        "@repo/common.application": "workspace:*"
+    }
+}

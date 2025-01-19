@@ -1,0 +1,9 @@
+{
+    "name": "@repo/rat-defender.domain",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/common.domain": "workspace:*",
+        "@repo/common.configuration": "workspace:*",
+        "@repo/wrapper-gen": "workspace:*"
+    }
+}

@@ -1,8 +1,11 @@
 ﻿using Common.Application.UnitOfWork.Abstractions;
 using Common.Application.UnitOfWork.Extensions;
+using DebounceThrottle;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using RatDefender.Domain.Configurations;
 using RatDefender.Domain.Services.Abstractions;
 
 namespace RatDefender.HostedServices;
@@ -10,59 +13,84 @@ namespace RatDefender.HostedServices;
 public class RatDetectionBackgroundService(
     ILogger<RatDetectionBackgroundService> logger,
     IServiceProvider provider,
-    IBuzzer buzzer,
-    IDetectionNotifier notifier
-) : BackgroundService
+    IRatDetector detector,
+    IOptions<RatDetectorOptions> options
+) : BackgroundService, IDisposable
 {
+    private readonly ThrottleDispatcher? _handlerThrottler =
+        options.Value.MinimumTimeBetweenDetectionsSeconds is not null
+            ? new(TimeSpan.FromSeconds(options.Value
+                .MinimumTimeBetweenDetectionsSeconds.Value))
+            : null;
+    
+    private bool _isPreviousDetected = false;
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var cts =
+            CancellationTokenSource.CreateLinkedTokenSource([stoppingToken]);
+
+        // allow startup to complete
+        await Task.Delay(1000, cts.Token);
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(50, stoppingToken);
-                await RunAsync(stoppingToken);
+                await Task.Delay(10, cts.Token);
+                await RunAsync(cts.Token);
             }
         }
         catch (OperationCanceledException)
         {
-            // expected
+            // expected, service is stopping
         }
         catch (Exception e)
         {
             logger.LogError(e,
                 "An error occurred while running RatDetectionBackgroundService");
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(1000, cts.Token);
         }
     }
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
-        ulong detectionCount;
-        using (var scope = provider.CreateScope())
+        stoppingToken.ThrowIfCancellationRequested();
+
+        using var scope = provider.CreateScope();
+        var res = await detector.GetDetectionsAsync(stoppingToken);
+
+        if (res.IsDetected && !_isPreviousDetected)
         {
-            var detector = scope.ServiceProvider
-                .GetRequiredService<IRatDetector>();
+            _isPreviousDetected = true;
             var uow = scope.ServiceProvider
                 .GetRequiredService<IUnitOfWork>();
-
+            var handler = scope.ServiceProvider
+                .GetRequiredService<IRatDetectionResultHandler>();
+            logger.LogInformation("Rat detected");
             await using (uow.CreateScope())
             {
-                var res = await detector.RunAsync(stoppingToken);
-                detectionCount = res.Detections;
-            }
-
-            if (detectionCount > 0)
-            {
-                await notifier.NotifyAsync(detectionCount,
-                    DateTimeOffset.UtcNow,
-                    stoppingToken);
+                if (_handlerThrottler is not null)
+                {
+                    await _handlerThrottler.ThrottleAsync(async () =>
+                    {
+                        logger.LogInformation("Running handler");
+                        await handler.HandleAsync(res, stoppingToken);
+                    }, stoppingToken);
+                }
+                else
+                {
+                    await handler.HandleAsync(res, stoppingToken);
+                }
             }
         }
-
-        if (detectionCount > 0)
+        else
         {
-            await buzzer.BuzzAsync(250, 1000, stoppingToken);
-        }
+            _isPreviousDetected = false;
+        } 
+    }
+
+    void IDisposable.Dispose()
+    {
+        _handlerThrottler?.Dispose();
     }
 }

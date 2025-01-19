@@ -1,0 +1,11 @@
+{
+    "name": "@repo/common.dependency-injection",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/common.aspnetcore": "workspace:*",
+        "@repo/common.domain": "workspace:*",
+        "@repo/common.application": "workspace:*",
+        "@repo/common.hosted-services": "workspace:*",
+        "@repo/common.infrastructure.persistence": "workspace:*"
+    }
+}

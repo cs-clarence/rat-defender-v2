@@ -1,0 +1,13 @@
+{
+    "name": "@repo/rat-defender.dependency-injection",
+    "version": "0.0.0-semantically-released",
+    "dependencies": {
+        "@repo/rat-defender.aspnetcore": "workspace:*",
+        "@repo/rat-defender.domain": "workspace:*",
+        "@repo/rat-defender.hosted-services": "workspace:*",
+        "@repo/rat-defender.infrastructure.persistence": "workspace:*",
+        "@repo/rat-defender.infrastructure.iot": "workspace:*",
+        "@repo/rat-defender.infrastructure.object-detection": "workspace:*",
+        "@repo/common.dependency-injection": "workspace:*"
+    }
+}
