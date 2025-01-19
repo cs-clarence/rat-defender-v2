@@ -16,7 +16,12 @@
     "dependencies": {
         "@repo/rat-defender.infrastructure.object-detection": "workspace:*",
         "@repo/rat-defender.infrastructure.object-detection.runtime.linux-x64": "workspace:*",
-        "@repo/rat-defender.infrastructure.object-detection.runtime.linux-arm64": "workspace:*"
+        "@repo/rat-defender.infrastructure.object-detection.runtime.linux-arm64": "workspace:*",
+        "@repo/common.aspnetcore": "workspace:*",
+        "@repo/common.dependency-injection": "workspace:*",
+        "@repo/rat-defender.aspnetcore": "workspace:*",
+        "@repo/rat-defender.dependency-injection": "workspace:*",
+        "@repo/rat-defender.infrastructure.persistence": "workspace:*"
     },
     "devDependencies": {
         "@repo/strip-utf8-bom": "workspace:*"

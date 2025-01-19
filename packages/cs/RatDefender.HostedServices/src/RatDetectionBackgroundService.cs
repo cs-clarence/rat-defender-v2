@@ -61,7 +61,6 @@ public class RatDetectionBackgroundService(
 
         if (res.IsDetected && !_isPreviousDetected)
         {
-            _isPreviousDetected = true;
             var uow = scope.ServiceProvider
                 .GetRequiredService<IUnitOfWork>();
             var handler = scope.ServiceProvider
@@ -83,10 +82,7 @@ public class RatDetectionBackgroundService(
                 }
             }
         }
-        else
-        {
-            _isPreviousDetected = false;
-        } 
+        _isPreviousDetected = res.IsDetected;
     }
 
     void IDisposable.Dispose()
