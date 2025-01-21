@@ -49,6 +49,9 @@ public class RatDetector(
         CancellationToken stoppingToken = default)
     {
         var opt = options.Value;
+        var thermReading = await thermalImager.ReadImageAsync(stoppingToken);
+        var temperatureDetected = IsRatTemperatureDetected(thermReading, opt);
+
         var results = await imageProcessor.ProcessImageAsync(stoppingToken);
         var count =
             results.Detections.Any(
@@ -57,10 +60,6 @@ public class RatDetector(
                 : 0u;
 
         stoppingToken.ThrowIfCancellationRequested();
-
-        var thermReading = await thermalImager.ReadImageAsync(stoppingToken);
-        var temperatureDetected = IsRatTemperatureDetected(thermReading, opt);
-
         return new DetectionResult(count, temperatureDetected,
             !opt.UseThermalSensor, DateTimeOffset.UtcNow);
     }

@@ -105,11 +105,11 @@ public static class RatDefenderDependencyInjectionExtensions
             .ValidateOnStart();
 
         services
-            .AddSingleton<IValidateOptions<DetectionSmsNotifierOptions>,
+            .AddSingleton<IValidateOptions<DetectionUartSmsNotifierOptions>,
                 DetectionSmsNotifierOptionsValidator>();
 
-        services.AddOptions<DetectionSmsNotifierOptions>()
-            .BindConfiguration(DetectionSmsNotifierOptions.DefaultKey)
+        services.AddOptions<DetectionUartSmsNotifierOptions>()
+            .BindConfiguration(DetectionUartSmsNotifierOptions.DefaultKey)
             .ValidateOnStart();
 
         services.AddOptions<RatDetectionImageProcessorOptions>()
@@ -180,7 +180,7 @@ public static class RatDefenderDependencyInjectionExtensions
         {
             services.AddHttpClient<ItexmoClient>(
                 o => { o.BaseAddress = new Uri("https://api.itexmo.com"); });
-            services.AddSingleton<IDetectionNotifier, DetectionSmsNotifier>();
+            services.AddSingleton<IDetectionNotifier, DetectionUartSmsNotifier>();
         }
 
         services.AddSingleton(imageHolder);

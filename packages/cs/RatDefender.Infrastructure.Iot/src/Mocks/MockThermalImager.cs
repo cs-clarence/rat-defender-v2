@@ -35,7 +35,7 @@ public class MockThermalImager(ILogger<MockThermalImager> logger)
         CancellationToken ct = default)
     {
         await Task.Delay(10, ct);
-        logger.LogInformation("Reading thermal image");
+        logger.LogDebug("Reading thermal image");
         return new ThermalImagerReading(CreateRandomImage());
     }
 }

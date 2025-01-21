@@ -3,7 +3,7 @@
     "version": "0.0.0-semantically-released",
     "scripts": {
         "cargo-build-x86_64": "with-env -- 'cargo build --release --lib'",
-        "cargo-build-aarch64": "with-env -- 'cross build --release --lib --target aarch64-unknown-linux-gnu'",
+        "cargo-build-aarch64": "with-env -- 'cross build --release --features onnx-acl --lib --target aarch64-unknown-linux-gnu'",
         "cargo-build-targets": "bun run cargo-build-x86_64 & bun run cargo-build-aarch64",
         "copy-x86_64": "with-env -- 'sh -c \"cp ../../../target/release/*.so ./build/x86_64-unknown-linux-gnu/release/\"'",
         "copy-aarch64": "with-env -- 'sh -c \"cp ../../../target/aarch64-unknown-linux-gnu/release/*.so ./build/aarch64-unknown-linux-gnu/release/\"'",
