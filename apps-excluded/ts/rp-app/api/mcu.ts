@@ -6,8 +6,8 @@ import { getThermalImagerReadingsDegreesCelsius } from "./gen/endpoints/thermal-
 
 export class McuApi {
     constructor(
-        private readonly config: {
-            baseUrl: string;
+        public readonly config: {
+            readonly baseUrl: string;
         },
     ) {
         customFetch.extend = async (url, options) => {

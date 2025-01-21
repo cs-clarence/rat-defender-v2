@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
     StyleSheet,
     View,
@@ -24,6 +24,8 @@ import { useQuery } from "@tanstack/react-query";
 import { celsiusToThermalColor } from "@/utilities/temperature";
 import { resizeImage, type PixelMatrix } from "@/utilities/image";
 import { getContrastingColor } from "@/utilities/colors";
+import { getGetCurrentImageMotionJpegUrl } from "@/api";
+import { WebView } from "react-native-webview";
 
 async function saveImageToDisk(bytes: string, name: string) {
     const path = `${FileSystem.documentDirectory}/${name}.png`;
@@ -145,6 +147,10 @@ export default function TabTwoScreen() {
         refetchInterval: 500,
     });
 
+    const [cameraMode, setCameraMode] = useState<"thermal" | "vision">(
+        "thermal",
+    );
+
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -171,10 +177,29 @@ export default function TabTwoScreen() {
                     Camera Preview
                 </ThemedText>
             </ThemedView>
+            {/* Placeholder for Capture Button */}
+            <View style={styles.buttonContainerHorizontal}>
+                <Button
+                    title="Thermal"
+                    disabled={cameraMode === "thermal"}
+                    onPress={() => {
+                        setCameraMode("thermal");
+                    }}
+                    color="#007BFF"
+                />
+                <Button
+                    title="Vision"
+                    disabled={cameraMode === "vision"}
+                    onPress={() => {
+                        setCameraMode("vision");
+                    }}
+                    color="#007BFF"
+                />
+            </View>
 
             <View style={styles.cameraContainer}>
                 {/* Placeholder for Camera Preview */}
-                {query.data && (
+                {cameraMode === "thermal" && query.data && (
                     <Canvas style={styles.matrixPreview} ref={canvasRef}>
                         {interpolateMatrix(
                             query.data.data.data?.image ?? [],
@@ -209,28 +234,36 @@ export default function TabTwoScreen() {
                     </Canvas>
                 )}
 
+                {cameraMode === "vision" && <VideoFeed />}
+
                 {/* Placeholder for Capture Button */}
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Capture"
-                        disabled={!query.data || canvasRef === null}
-                        onPress={async () => {
-                            try {
-                                const url = await saveImage();
-                                Alert.alert("Image Saved", `Saved to '${url}'`);
-                            } catch (error) {
-                                Alert.alert(
-                                    "Error",
-                                    error instanceof Error
-                                        ? error.message
-                                        : String(error),
-                                );
-                            }
-                        }}
-                        color="#007BFF"
-                    />
-                </View>
+                {cameraMode === "thermal" && (
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            title="Capture"
+                            disabled={!query.data || canvasRef === null}
+                            onPress={async () => {
+                                try {
+                                    const url = await saveImage();
+                                    Alert.alert(
+                                        "Image Saved",
+                                        `Saved to '${url}'`,
+                                    );
+                                } catch (error) {
+                                    Alert.alert(
+                                        "Error",
+                                        error instanceof Error
+                                            ? error.message
+                                            : String(error),
+                                    );
+                                }
+                            }}
+                            color="#007BFF"
+                        />
+                    </View>
+                )}
             </View>
+            <View style={styles.bottomPadding} />
         </ParallaxScrollView>
     );
 }
@@ -246,7 +279,6 @@ const styles = StyleSheet.create({
     titleContainer: {
         flexDirection: "row",
         gap: 8,
-        marginVertical: 16,
         paddingHorizontal: 16,
         alignSelf: "center",
     },
@@ -269,6 +301,12 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 16,
     },
+    buttonContainerHorizontal: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "center",
+    },
     previewContainer: {
         marginTop: 16,
         width: "100%",
@@ -289,4 +327,34 @@ const styles = StyleSheet.create({
         width: cameraPreviewDimensions.width,
         height: cameraPreviewDimensions.height,
     },
+    backgroundVideo: {
+        width: 340,
+        height: 260,
+    },
+    bottomPadding: {
+        height: 80,
+    },
 });
+
+function VideoFeed() {
+    const mcuApi = useMcuApi();
+
+    function formatHtml() {
+        const url = `${mcuApi.config.baseUrl}${getGetCurrentImageMotionJpegUrl()}`;
+        return `<html><body><img src="${url}" width="100%" style="background-color: white; min-height: 100%; min-width: 100%; position: fixed; top: 0; left: 0;"></body></html>`;
+    }
+
+    return (
+        <View>
+            <WebView
+                style={styles.backgroundVideo}
+                automaticallyAdjustContentInsets={true}
+                scalesPageToFit={true}
+                startInLoadingState={false}
+                contentInset={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                scrollEnabled={false}
+                source={{ html: formatHtml(), baseUrl: "/" }}
+            />
+        </View>
+    );
+}
