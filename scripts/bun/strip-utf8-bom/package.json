@@ -18,10 +18,10 @@
     "devDependencies": {
         "@commander-js/extra-typings": "^13.0.0",
         "@repo/tsconfig": "workspace:*",
-        "@types/bun": "1.1.16"
+        "@types/bun": "1.1.18"
     },
     "dependencies": {
-        "commander": "^13.0.0",
+        "commander": "^13.1.0",
         "jschardet": "^3.1.4",
         "strip-bom": "^5.0.0"
     },

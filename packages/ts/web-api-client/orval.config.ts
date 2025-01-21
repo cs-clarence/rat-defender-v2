@@ -3,7 +3,7 @@ import { defineConfig } from "orval";
 export default defineConfig({
     gateway: {
         input: {
-            target: `${process.env.API_BASE_URL ?? "http://localhost:5149"}/openapi/v1.json`,
+            target: `${process.env.API_BASE_URL ?? "http://localhost:5177"}/openapi/v1.json`,
         },
         output: {
             indexFiles: true,

@@ -20,7 +20,7 @@
         "services/cs/*",
         "scripts/bun/*"
     ],
-    "packageManager": "bun@1.1.43",
+    "packageManager": "bun@1.1.45",
     "publishConfig": {
         "access": "restricted"
     },
