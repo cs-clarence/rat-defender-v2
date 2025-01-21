@@ -1,6 +1,6 @@
 namespace RatDefender.Application.Dtos;
 
 public record RatDetectionDaySummaryDto(
-    DateOnly Day,
+    DateOnly Date,
     ulong Count
 );

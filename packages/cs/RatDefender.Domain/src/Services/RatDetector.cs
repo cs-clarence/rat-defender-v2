@@ -33,8 +33,9 @@ public class RatDetector(
             {
                 var pixel = reading.Image[x, y];
 
-                if (pixel.DegreesCelsius > options.MaximumTemperatureCelsius
-                    && pixel.DegreesCelsius < options.MinimumTemperatureCelsius)
+                if (pixel.DegreesCelsius >= options.MinimumTemperatureCelsius
+                    && pixel.DegreesCelsius <=
+                    options.MaximumTemperatureCelsius)
                 {
                     return true;
                 }
@@ -52,7 +53,12 @@ public class RatDetector(
         var thermReading = await thermalImager.ReadImageAsync(stoppingToken);
         var temperatureDetected = IsRatTemperatureDetected(thermReading, opt);
 
-        var results = await imageProcessor.ProcessImageAsync(stoppingToken);
+        var results = await imageProcessor.ProcessImageAsync(
+            new ProcessOptions(
+                DetectRats: !options.Value.DetectThermalBeforeObjectDetection ||
+                            temperatureDetected),
+            stoppingToken
+        );
         var count =
             results.Detections.Any(
                 box => box.Confidence >= opt.MinimumConfidence)

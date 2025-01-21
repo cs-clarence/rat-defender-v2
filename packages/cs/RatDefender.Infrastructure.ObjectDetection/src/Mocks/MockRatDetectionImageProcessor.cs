@@ -10,11 +10,17 @@ public class MockRatDetectionImageProcessor(
     private readonly Random _random = new();
     private readonly ulong[] _randAccepted = [0, 1, 23, 44, 59, 23];
 
-    public async Task<ProcessResult> ProcessImageAsync(
-        CancellationToken ct = default)
+    public Task<ProcessResult> ProcessImageAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return ProcessImageAsync(ProcessOptions.Default, cancellationToken);
+    }
+
+    public async Task<ProcessResult> ProcessImageAsync(ProcessOptions options,
+        CancellationToken cancellationToken = default)
     {
         // 200 ms delay to simulate processing time
-        await Task.Delay(5000, ct);
+        await Task.Delay(5000, cancellationToken);
         var result = _random.NextInt64(0, 100);
         // simulate low detection rate
         var count = _randAccepted.Contains((ulong)result) ? 1ul : 0ul;

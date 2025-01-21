@@ -1,8 +1,0 @@
-{
-    "extends": ["@repo/tsconfig/base.json"],
-    "compilerOptions": {
-        "jsx": "preserve",
-        "jsxImportSource": "solid-js",
-        "exactOptionalPropertyTypes": false
-    }
-}

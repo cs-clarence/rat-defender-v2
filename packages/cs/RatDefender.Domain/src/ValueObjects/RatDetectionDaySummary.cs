@@ -1,3 +1,3 @@
 namespace RatDefender.Domain.ValueObjects;
 
-public record RatDetectionDaySummary(DateOnly Day, ulong Count);
+public record RatDetectionDaySummary(DateOnly Date, ulong Count);

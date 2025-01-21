@@ -1,0 +1,63 @@
+{
+	"expo": {
+		"newArchEnabled": true,
+		"name": "RatApp",
+		"slug": "RatApp",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/images/rattt.png",
+		"scheme": "myapp",
+		"userInterfaceStyle": "automatic",
+		"splash": {
+			"image": "./assets/images/rattt.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#ffffff"
+		},
+		"ios": {
+			"supportsTablet": true
+		},
+		"android": {
+			"permissions": [
+				"android.permission.READ_EXTERNAL_STORAGE",
+				"android.permission.WRITE_EXTERNAL_STORAGE",
+				"android.permission.ACCESS_WIFI_STATE",
+				"android.permission.ACCESS_NETWORK_STATE",
+				"android.permission.CHANGE_WIFI_MULTICAST_STATE",
+				"android.permission.INTERNET"
+			],
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/images/rattt.png",
+				"backgroundColor": "#ffffff"
+			},
+			"package": "com.karleinjhel.RatApp"
+		},
+		"web": {
+			"bundler": "metro",
+			"output": "static",
+			"favicon": "./assets/images/rattt.png"
+		},
+		"plugins": [
+			"expo-router",
+			"expo-font",
+			[
+				"expo-build-properties",
+				{
+					"android": {
+						"usesCleartextTraffic": true
+					}
+				}
+			]
+		],
+		"experiments": {
+			"typedRoutes": true
+		},
+		"extra": {
+			"eas": {
+				"projectId": "b99c95d3-4b0d-489a-9e36-45eb71aeafba"
+			},
+			"router": {
+				"origin": false
+			}
+		}
+	}
+}

@@ -65,14 +65,14 @@ public class RatDetectionBackgroundService(
                 .GetRequiredService<IUnitOfWork>();
             var handler = scope.ServiceProvider
                 .GetRequiredService<IRatDetectionResultHandler>();
-            logger.LogInformation("Rat detected");
+            logger.LogDebug("Rat detected");
             await using (uow.CreateScope())
             {
                 if (_handlerThrottler is not null)
                 {
                     await _handlerThrottler.ThrottleAsync(async () =>
                     {
-                        logger.LogInformation("Running handler");
+                        logger.LogDebug("Running handler");
                         await handler.HandleAsync(res, stoppingToken);
                     }, stoppingToken);
                 }

@@ -11,6 +11,8 @@ public record PhoneNumber
 
     [Required]
     public required long LocalNumber { get; init; }
+    
+    public string Formatted => $"+{CountryCode}{LocalNumber}";
 }
 
 public record DetectionUartSmsNotifierOptions
@@ -26,7 +28,7 @@ public record DetectionUartSmsNotifierOptions
 
     [Required]
     public required string MessageFormat { get; init; } =
-        "Detected {count} rat(s) at {time}.";
+        "Detected {{count}} rat(s) at {{time}}.";
 
     [Required] 
     [ValidateEnumeratedItems]

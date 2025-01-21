@@ -34,6 +34,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+
 app.UseExceptionHandler();
 
 app.UseMiddleware<DomainExceptionHandlerMiddleware>();
@@ -62,5 +63,6 @@ app.MapScalarApiReference(o => { o.EndpointPathPrefix = "/scalar"; });
 
 var api = app.MapGroup("/api");
 api.MapRatDefenderApi();
+app.MapGet("/health", () => new { Status = "OK" });
 
 await app.RunAsync();

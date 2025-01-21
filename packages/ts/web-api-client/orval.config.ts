@@ -8,6 +8,10 @@ export default defineConfig({
         output: {
             indexFiles: true,
             client: "fetch",
+            unionAddMissingProperties: true,
+            urlEncodeParameters: true,
+            propertySortOrder: "Alphabetical",
+            httpClient: "fetch",
             clean: true,
             mode: "tags",
             biome: true,

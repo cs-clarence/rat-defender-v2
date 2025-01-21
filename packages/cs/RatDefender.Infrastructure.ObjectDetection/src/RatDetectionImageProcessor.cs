@@ -16,32 +16,34 @@ internal static class InternalMappers
         {
             return null;
         }
-        
+
         return value.Value switch
         {
             VideoCaptureApis.Gstreamer => VideoCaptureApi.Gstreamer,
             VideoCaptureApis.V4l2 => VideoCaptureApi.V4l2,
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value,
+                null)
         };
     }
 
 
-    public static VideoCaptureMode? ToVideoCaptureMode(this VideoCaptureModes? value)
+    public static VideoCaptureMode? ToVideoCaptureMode(
+        this VideoCaptureModes? value)
     {
         if (value is null)
         {
             return null;
         }
-        
+
         return value.Value switch
         {
             VideoCaptureModes.Bgr => VideoCaptureMode.Bgr,
             VideoCaptureModes.Rgb => VideoCaptureMode.Rgb,
             VideoCaptureModes.Gray => VideoCaptureMode.Gray,
             VideoCaptureModes.Yuyv => VideoCaptureMode.Yuyv,
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value,
+                null)
         };
-        
     }
 }
 
@@ -131,15 +133,21 @@ public class RatDetectionImageProcessor : IRatDetectionImageProcessor,
     public Task<ProcessResult> ProcessImageAsync(
         CancellationToken ct = default)
     {
+        return ProcessImageAsync(ProcessOptions.Default, ct);
+    }
+
+    public Task<ProcessResult> ProcessImageAsync(ProcessOptions options,
+        CancellationToken cancellationToken = default)
+    {
         var infer = _inferenceOptions.Value;
         var opt = _options.Value;
-        ct.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
         var result = _detector.Run(
             new RunArgs(
-                infer.MinimumConfidence,
-                opt.ShowLabel,
-                opt.ShowConfidence,
-                opt.DetectRats
+                options.MinimumConfidence ?? infer.MinimumConfidence,
+                options.ShowLabel ?? opt.ShowLabel,
+                options.ShowConfidence ?? opt.ShowConfidence,
+                options.DetectRats ?? opt.DetectRats
             ));
         var detections = result.detections.Select(i => new DetectionBoundingBox
             {

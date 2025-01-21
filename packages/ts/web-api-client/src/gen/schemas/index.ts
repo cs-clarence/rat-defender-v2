@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './anonymousTypeOfstring';
 export * from './buzzCommand';
 export * from './dataResponseOfICollectionOfRatDetectionDaySummaryDto';
 export * from './dataResponseOfICollectionOfRatDetectionDto';
