@@ -22,7 +22,7 @@ public class RatDetectionResultHandler(
             ),
             stoppingToken
         );
-        var t2 = buzzer.BuzzAsync(250, 1000, stoppingToken);
+        var t2 = buzzer.BuzzAsync(stoppingToken);
         var t3 = dispenser.DispenseAsync(1, stoppingToken);
         var t4 = notifier.NotifyAsync(result.Detections,
             result.DetectedAt, stoppingToken);

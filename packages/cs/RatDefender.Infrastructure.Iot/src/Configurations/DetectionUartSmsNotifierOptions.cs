@@ -24,7 +24,7 @@ public record DetectionUartSmsNotifierOptions
     public required string PortName { get; init; } = "/dev/ttyS2";
     
     [Required] 
-    public required uint BaudRate { get; init; } = 9600;
+    public required uint BaudRate { get; init; } = 115200;
 
     [Required]
     public required string MessageFormat { get; init; } =

@@ -11,17 +11,23 @@ public class MockBuzzer(
     IOptions<BuzzerOptions> options,
     ITaskQueueHandle tq) : IBuzzer
 {
-    public Task BuzzAsync(ushort tone, ushort duration,
+    public Task BuzzAsync(uint tone, uint duration, uint delay,
         CancellationToken cancellationToken = default)
     {
         return tq.EnqueueAsync(async () =>
         {
-            logger.LogInformation("Buzz Delay: {delay}",
-                options.Value.BuzzDelayMs);
+            logger.LogInformation("Buzz Delay: {delay}", delay);
             logger.LogInformation("Buzzing {tone}", tone);
-            await Task.Delay(duration, cancellationToken);
+            await Task.Delay((int)duration, cancellationToken);
             logger.LogInformation("Buzzed for {duration}", duration);
         }, cancellationToken);
+    }
+
+    public Task BuzzAsync(uint tone, uint duration,
+        CancellationToken cancellationToken = default)
+    {
+        return BuzzAsync(tone, duration, options.Value.BuzzDelayMs,
+            cancellationToken);
     }
 
     public Task BuzzAsync(CancellationToken cancellationToken = default)

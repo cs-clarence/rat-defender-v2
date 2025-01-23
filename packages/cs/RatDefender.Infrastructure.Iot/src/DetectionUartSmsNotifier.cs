@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.IO.Ports;
 using Common.HostedServices.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,118 +27,121 @@ public class DetectionUartSmsNotifier : IDetectionNotifier
         logger.LogInformation("{}", options.Value);
     }
 
-    // private string AT_GetResponse(TimeSpan? timeout = null)
-    // {
-    //     string? result = null;
-    //     timeout ??= TimeSpan.FromSeconds(5);
-    //
-    //     var sw = Stopwatch.StartNew();
-    //
-    //     do
-    //     {
-    //         result = _port.ReadExisting();
-    //
-    //         if (sw.Elapsed > timeout)
-    //         {
-    //             sw.Stop();
-    //             throw new TimeoutException("Timeout when reading response");
-    //         }
-    //     } while (string.IsNullOrWhiteSpace(result));
-    //
-    //     return result;
-    // }
-    //
-    //
-    // private async Task<bool> AT_SetSmsTextMode(bool isSend = true, int mode = 1)
-    // {
-    //     bool ok = false;
-    //     var command = $"{(isSend ? "AT+CMGF" : "AT+CMGR")}={mode}";
-    //
-    //     _port.WriteLine(command);
-    //
-    //     await Task.Delay(200);
-    //
-    //     var response = AT_GetResponse();
-    //
-    //     if (!response.Contains("OK"))
-    //     {
-    //         _logger.LogError("CMD {command} ERROR, Response: {response}",
-    //             command, response);
-    //         return false;
-    //     }
-    //
-    //     _logger.LogDebug("CMD {command} OK, Response: {response}", command,
-    //         response);
-    //
-    //     return true;
-    // }
-    //
-    //
-    // private async Task AT_SendSms(string phoneNumber, string message)
-    // {
-    //     var ok = await AT_SetSmsTextMode();
-    //
-    //     if (!ok)
-    //     {
-    //         _logger.LogError("Can't set to text mode");
-    //         return;
-    //     }
-    //
-    //     var command = $"AT+CMGS=\"{phoneNumber}\"";
-    //     _port.WriteLine(command);
-    //
-    //     await Task.Delay(200);
-    //
-    //     var response = AT_GetResponse();
-    //
-    //     if (!response.Contains("OK"))
-    //     {
-    //         _logger?.LogError($"Can't set phone number, Response: {response}");
-    //         return;
-    //     }
-    //
-    //     _logger.LogDebug($"Set phone number, Response: {response}");
-    //
-    //     _port.WriteLine(message);
-    //     await Task.Delay(200);
-    //
-    //     // CTRL+Z
-    //     _port.Write([(char)26], 0, 1);
-    //     await Task.Delay(200);
-    //
-    //     response = AT_GetResponse();
-    //     if (!response.Contains("OK"))
-    //     {
-    //         _logger.LogError($"Can't send message, Response: {response}");
-    //     }
-    //
-    //     _logger.LogDebug($"Send message, Response: {response}");
-    // }
+    private static string GetResponse(SerialPort port)
+    {
+        string result;
+
+        do
+        {
+            result = port.ReadExisting();
+        } while (string.IsNullOrWhiteSpace(result));
+
+        return result;
+    }
+
+    private async Task SendSmsAsync(string msg, string phoneNumber,
+        SerialPort port)
+    {
+        port.Write($"AT+CMGF=1\r\n");
+        await Task.Delay(200);
+        var response = GetResponse(port);
+
+        if (response.IndexOf("OK", StringComparison.OrdinalIgnoreCase) == -1)
+        {
+            throw new InvalidOperationException(
+                string.Format(CultureInfo.InvariantCulture,
+                    "Got error response '{0}'.", response));
+        }
+
+        port.Write($"AT+CMGS=\"{phoneNumber}\"\r\n");
+
+        response = GetResponse(port);
+        if (response.IndexOf(">", StringComparison.OrdinalIgnoreCase) == -1)
+        {
+            throw new InvalidOperationException(
+                string.Format(CultureInfo.InvariantCulture,
+                    "Got error response '{0}'.", response));
+        }
+
+        await Task.Delay(200);
+        port.Write($"{msg}\r\n");
+        await Task.Delay(200);
+        port.Write(['\x1A'], 0, 1);
+
+        const int timeoutMs = 30000;
+        response = GetResponse(port);
+
+        var start = DateTimeOffset.UtcNow;
+
+        while (!(response.Contains("OK", StringComparison.OrdinalIgnoreCase) ||
+                 response.Contains("+CMGS",
+                     StringComparison.OrdinalIgnoreCase)) &&
+               DateTimeOffset.UtcNow.Subtract(start).TotalMilliseconds <
+               timeoutMs)
+        {
+            response = GetResponse(port);
+            await Task.Delay(100);
+        }
+
+        if (DateTimeOffset.UtcNow.Subtract(start).TotalMilliseconds >=
+            timeoutMs)
+        {
+            // Let's just log this and assume it the SMS was sent
+            _logger.LogError("Timeout waiting for SMS to be sent");
+        }
+    }
 
     private Task SendSms(ulong detectionCount, DateTimeOffset? detectedAt,
         CancellationToken cancellationToken = default)
     {
         SmsSender.Debug = true;
         var msg = _options.Value.MessageFormat
-            .Replace("{{count}}", detectionCount.ToString())
-            .Replace("{{time}}", detectedAt?.ToString("HH:mm:ss") ?? "");
+            .Replace("{{count}}", detectionCount.ToString());
+
+        if (detectedAt is not null)
+        {
+            // Convert time to local time
+            msg = msg.Replace("{{time}}",
+                detectedAt.Value.DateTime.ToLocalTime()
+                    .ToString(CultureInfo.CurrentCulture));
+        }
 
         return _tq.EnqueueAsync(async () =>
         {
+            using var port = new SerialPort(_options.Value.PortName,
+                (int)_options.Value.BaudRate);
+            port.Open();
             foreach (var recipient in _options.Value.Recipients)
             {
-                _logger.LogInformation("Sending SMS to {0}", recipient);
-                using var smsSender = new SmsSender(
-                    _options.Value.PortName,
-                    recipient.CountryCode,
-                    recipient.LocalNumber,
-                    msg,
-                    _logger
-                );
-                
-                smsSender.Send();
+                _logger.LogInformation("Sending SMS to {0}",
+                    recipient.Formatted);
+                // using (
+                //     var smsSender = new SmsSender(
+                //         _options.Value.PortName,
+                //         recipient.CountryCode,
+                //         recipient.LocalNumber,
+                //         msg,
+                //         _logger
+                //     )
+                // )
+                // {
+                //     smsSender.Send();
+                // }
+                try
+                {
+                    await SendSmsAsync(msg, recipient.Formatted, port);
+                    _logger.LogInformation("SMS sent to {}",
+                        recipient.Formatted);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error sending SMS");
+                }
+
                 await Task.Delay(1000, cancellationToken);
             }
+
+            port.Close();
         }, cancellationToken);
     }
 

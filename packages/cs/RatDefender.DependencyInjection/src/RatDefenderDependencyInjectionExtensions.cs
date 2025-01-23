@@ -63,7 +63,7 @@ public static class RatDefenderDependencyInjectionExtensions
             IRatDetector,
             RatDetector
         >();
-        
+
         services.AddScoped<
             IRatDetectionResultHandler,
             RatDetectionResultHandler
@@ -84,8 +84,6 @@ public static class RatDefenderDependencyInjectionExtensions
     public static IServiceCollection AddRatDefenderInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
-        var imageHolder = new ImageHolder();
-        
         services.AddDbContextPool<RatDefenderDbContext>(
             o =>
             {
@@ -130,10 +128,10 @@ public static class RatDefenderDependencyInjectionExtensions
             .BindConfiguration(FoodDispenserOptions.DefaultKey)
             .ValidateOnStart();
 
-        var mock = configuration.GetSection(MockOptions.DefaultKey)
-            .Get<MockOptions>() ?? new MockOptions();
+        var mock = configuration.GetSection(ServiceRegistrationOptions.DefaultKey)
+            .Get<ServiceRegistrationOptions>() ?? new ServiceRegistrationOptions();
 
-        if (mock.ThermalImager)
+        if (mock.MockThermalImager)
         {
             services.AddSingleton<IThermalImager, MockThermalImager>();
         }
@@ -142,7 +140,7 @@ public static class RatDefenderDependencyInjectionExtensions
             services.AddSingleton<IThermalImager, ThermalImager>();
         }
 
-        if (mock.FoodDispenser)
+        if (mock.MockFoodDispenser)
         {
             services.AddSingleton<IFoodDispenser, MockFoodDispenser>();
         }
@@ -151,7 +149,7 @@ public static class RatDefenderDependencyInjectionExtensions
             services.AddSingleton<IFoodDispenser, FoodDispenser>();
         }
 
-        if (mock.Buzzer)
+        if (mock.MockBuzzer)
         {
             services.AddSingleton<IBuzzer, MockBuzzer>();
         }
@@ -160,7 +158,7 @@ public static class RatDefenderDependencyInjectionExtensions
             services.AddSingleton<IBuzzer, Buzzer>();
         }
 
-        if (mock.RatDetectionImageProcessor)
+        if (mock.MockRatDetectionImageProcessor)
         {
             services.AddSingleton<IRatDetectionImageProcessor,
                 MockRatDetectionImageProcessor>();
@@ -171,20 +169,30 @@ public static class RatDefenderDependencyInjectionExtensions
                 RatDetectionImageProcessor>();
         }
 
-        if (mock.DetectionNotifier)
+        if (mock.MockDetectionNotifier)
         {
             services
                 .AddSingleton<IDetectionNotifier, MockDetectionNotifier>();
         }
         else
         {
-            services.AddHttpClient<ItexmoClient>(
-                o => { o.BaseAddress = new Uri("https://api.itexmo.com"); });
-            services.AddSingleton<IDetectionNotifier, DetectionUartSmsNotifier>();
+            services
+                .AddSingleton<IDetectionNotifier, DetectionUartSmsNotifier>();
         }
 
-        services.AddSingleton(imageHolder);
-        services.AddSingleton<IImageRetriever>(imageHolder);
+        services
+            .AddSingleton<IValidateOptions<SerialAdapterOptions>,
+                SerialAdapterOptionsValidator>();
+        services.AddOptions<SerialAdapterOptions>()
+            .Bind(configuration.GetSection(SerialAdapterOptions.DefaultKey));
+        services.AddSingleton<SerialAdapter>();
+        services.AddSingleton<IBuzzer>(p =>
+            p.GetRequiredService<SerialAdapter>());
+        services.AddSingleton<IFoodDispenser>(p =>
+            p.GetRequiredService<SerialAdapter>());
+        services.AddSingleton<ImageHolder>();
+        services.AddSingleton<IImageRetriever>(p =>
+            p.GetRequiredService<ImageHolder>());
 
         return services;
     }

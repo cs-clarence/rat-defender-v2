@@ -86,7 +86,7 @@ function getTotal(data: getDailySummariesResponse) {
     }, 0);
 }
 
-export default function HomeScreen() {
+export function HomeScreenImpl() {
     const mcuApi = useMcuApi();
 
     const query = useQuery({
@@ -196,6 +196,10 @@ export default function HomeScreen() {
             ))}
         </ScrollView>
     );
+}
+
+export default function HomeScreen() {
+    return <HomeScreenImpl />;
 }
 
 const styles = StyleSheet.create({

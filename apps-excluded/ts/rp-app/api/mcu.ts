@@ -37,6 +37,11 @@ export class McuApi {
     }
 
     async getThermalImageCelsius() {
-        return await getThermalImagerReadingsDegreesCelsius();
+        try {
+            return await getThermalImagerReadingsDegreesCelsius();
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 }

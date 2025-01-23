@@ -28,17 +28,18 @@ public class Buzzer : IBuzzer, IDisposable
         logger.LogInformation("{options}", options.Value);
     }
 
-    private Task BuzzAsync(ushort tone, ushort duration, ulong delayMs,
+
+    public Task BuzzAsync(uint tone, uint duration, uint delay,
         CancellationToken cancellationToken = default)
     {
         return _taskQueue.EnqueueAsync(async () =>
         {
-            await Task.Delay((int)delayMs, cancellationToken);
-            _buzzer.PlayTone(tone, duration);
+            await Task.Delay((int)delay, cancellationToken);
+            await BuzzAsync(tone, duration, cancellationToken);
         }, cancellationToken);
     }
 
-    public Task BuzzAsync(ushort tone, ushort duration,
+    public Task BuzzAsync(uint tone, uint duration,
         CancellationToken cancellationToken = default)
     {
         return BuzzAsync(tone, duration, _options.Value.BuzzDelayMs,

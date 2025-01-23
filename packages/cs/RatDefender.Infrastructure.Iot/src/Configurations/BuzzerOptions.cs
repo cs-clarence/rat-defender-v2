@@ -21,13 +21,13 @@ public record BuzzerOptions
     public float PwmDutyPercent { get; init; } = 0.5f;
     
     [Required]
-    public ushort BuzzTone { get; init; } = 250;
+    public uint BuzzTone { get; init; } = 20000;
     
     [Required]
-    public ushort BuzzDurationMs { get; init; } = 1000; // 1 second
+    public uint BuzzDurationMs { get; init; } = 1000; // 1 second
     
     [Required]
-    public ulong BuzzDelayMs { get; init; } = 30_000; // 30 seconds
+    public uint BuzzDelayMs { get; init; } = 30_000; // 30 seconds
 }
 
 [OptionsValidator]

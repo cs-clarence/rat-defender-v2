@@ -1,6 +1,5 @@
 ﻿using Common.Application.UnitOfWork.Abstractions;
 using Common.Application.UnitOfWork.Extensions;
-using DebounceThrottle;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,16 +13,13 @@ public class RatDetectionBackgroundService(
     ILogger<RatDetectionBackgroundService> logger,
     IServiceProvider provider,
     IRatDetector detector,
-    IOptions<RatDetectorOptions> options
-) : BackgroundService, IDisposable
+    IOptions<RatDetectorOptions> options,
+    IRatDetectionImageProcessor processor
+) : BackgroundService
 {
-    private readonly ThrottleDispatcher? _handlerThrottler =
-        options.Value.MinimumTimeBetweenDetectionsSeconds is not null
-            ? new(TimeSpan.FromSeconds(options.Value
-                .MinimumTimeBetweenDetectionsSeconds.Value))
-            : null;
-    
-    private bool _isPreviousDetected = false;
+    private DateTimeOffset _lastDetection = DateTimeOffset.UtcNow;
+
+    private bool _isPreviousDetected;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -32,23 +28,24 @@ public class RatDetectionBackgroundService(
 
         // allow startup to complete
         await Task.Delay(1000, cts.Token);
-        try
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
                 await Task.Delay(10, cts.Token);
                 await RunAsync(cts.Token);
             }
-        }
-        catch (OperationCanceledException)
-        {
-            // expected, service is stopping
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e,
-                "An error occurred while running RatDetectionBackgroundService");
-            await Task.Delay(1000, cts.Token);
+            catch (OperationCanceledException)
+            {
+                // expected, service is stopping
+                logger.LogInformation("Stopping RatDetectionBackgroundService");
+                break;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e,
+                    "An error occurred while running RatDetectionBackgroundService");
+            }
         }
     }
 
@@ -57,6 +54,24 @@ public class RatDetectionBackgroundService(
         stoppingToken.ThrowIfCancellationRequested();
 
         using var scope = provider.CreateScope();
+
+
+        // If the minimum time between detections is set and the last detection
+        // was more than the minimum time ago, then we should not detect a rat
+        // and only update the image
+        var minimumTimeBetweenDetectionsSeconds =
+            options.Value.MinimumTimeBetweenDetectionsSeconds;
+        if (minimumTimeBetweenDetectionsSeconds is not null &&
+            _lastDetection.AddSeconds(minimumTimeBetweenDetectionsSeconds
+                .Value) > DateTimeOffset.UtcNow)
+        {
+            await processor.ProcessImageAsync(new ProcessOptions
+            {
+                DetectRats = false,
+            }, stoppingToken);
+            return;
+        }
+
         var res = await detector.GetDetectionsAsync(stoppingToken);
 
         if (res.IsDetected && !_isPreviousDetected)
@@ -68,25 +83,11 @@ public class RatDetectionBackgroundService(
             logger.LogDebug("Rat detected");
             await using (uow.CreateScope())
             {
-                if (_handlerThrottler is not null)
-                {
-                    await _handlerThrottler.ThrottleAsync(async () =>
-                    {
-                        logger.LogDebug("Running handler");
-                        await handler.HandleAsync(res, stoppingToken);
-                    }, stoppingToken);
-                }
-                else
-                {
-                    await handler.HandleAsync(res, stoppingToken);
-                }
+                _lastDetection = DateTimeOffset.UtcNow;
+                await handler.HandleAsync(res, stoppingToken);
             }
         }
-        _isPreviousDetected = res.IsDetected;
-    }
 
-    void IDisposable.Dispose()
-    {
-        _handlerThrottler?.Dispose();
+        _isPreviousDetected = res.IsDetected;
     }
 }

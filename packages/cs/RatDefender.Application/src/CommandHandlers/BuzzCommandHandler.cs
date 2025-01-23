@@ -9,7 +9,8 @@ public class BuzzCommandHandler(IBuzzer buzzer) : ICommandHandler<BuzzCommand>
     public async ValueTask<Unit> Handle(BuzzCommand command,
         CancellationToken cancellationToken)
     {
-        await buzzer.BuzzAsync(command.Tone, command.Duration, cancellationToken);
+        await buzzer.BuzzAsync(command.Tone, command.Duration, 0,
+            cancellationToken);
         return Unit.Value;
     }
 }
