@@ -64,7 +64,7 @@ public class DetectionUartSmsNotifier : IDetectionNotifier
         }
 
         await Task.Delay(200);
-        port.Write($"{msg}\r\n");
+        port.Write($"{msg}");
         await Task.Delay(200);
         port.Write(['\x1A'], 0, 1);
 
